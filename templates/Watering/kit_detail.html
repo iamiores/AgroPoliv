@@ -1,0 +1,149 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/kit_det.css' %}">
+    <title>Деталі сету</title>
+</head>
+<body>
+    <h1>{{ kit.name }}</h1>
+    <p>{{ kit.description }}</p>
+
+    {% if kit.image %}
+        <img src="{{ kit.image.url }}" alt="{{ kit.name }}">
+    {% endif %}
+
+    <h2>Склад набору</h2>
+
+    <ul>
+        {% for item in kit_items %}
+            <li>
+                <a href="{% url 'item_detail' item.id %}">
+                    {{ item.name }} — {{ item.quantity }} шт.<br>
+                    <small>{{ item.description }}</small>
+                </a>
+            </li>
+        {% empty %}
+            <li>У цьому наборі поки немає товарів.</li>
+        {% endfor %}
+    </ul>
+    
+
+    <p class="price">{{ kit.price }} грн</p>
+    <br>
+
+    <button class="btn buy-btn" onclick="openPurchaseModal('buy')">Купити набір</button>
+    <button class="btn-cart" onclick="openPurchaseModal('cart')">Додати в кошик</button>
+
+    <div class="modal" id="purchaseModal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closePurchaseModal()">&times;</span>
+            <h2 id="modalTitle">Підтвердження дії</h2> 
+            <p><strong>{{ kit.name }}</strong></p>
+            <p>Ціна: <strong id="unitPriceDisplay">{{ kit.price }}</strong> грн</p>
+
+            <label for="actionQty">Кількість:</label>
+            <input type="number" id="actionQty" min="1" value="1">
+
+            <label for="actionPromo">Промокод:</label>
+            <input type="text" id="actionPromo" placeholder="Введіть код">
+
+            <p>Разом: <strong id="actionTotal">{{ kit.price }}</strong> грн</p>
+
+            <form id="purchaseForm" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" id="actionQtyHidden" value="1">
+                <input type="hidden" name="promo_code" id="actionPromoHidden" value="">
+                
+                <button type="submit" class="btn-confirm" id="btnConfirmBuy">Придбати</button>
+                <button type="submit" class="btn-confirm" id="btnConfirmCart" style="display: none;">Додати в кошик</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const purchaseModal = document.getElementById("purchaseModal");
+        const purchaseForm = document.getElementById("purchaseForm");
+        const modalTitle = document.getElementById("modalTitle");
+        const btnConfirmBuy = document.getElementById("btnConfirmBuy");
+        const btnConfirmCart = document.getElementById("btnConfirmCart");
+
+        const actionQty = document.getElementById("actionQty");
+        const actionPromo = document.getElementById("actionPromo");
+        const actionTotal = document.getElementById("actionTotal");
+        const actionQtyHidden = document.getElementById("actionQtyHidden");
+        const actionPromoHidden = document.getElementById("actionPromoHidden");
+        const unitPriceDisplay = document.getElementById("unitPriceDisplay");
+
+        const unitPrice = parseFloat('{{ kit.price }}');
+        // Константи для URL-адрес
+        const BUY_URL = "{% url 'buy_kit' kit.id %}";
+        const CART_URL = "{% url 'add_kit_to_cart' kit.id %}";
+        const PROMO_VALIDATE_URL = "{% url 'validate_promo' %}";
+
+        function openPurchaseModal(actionType) {
+            // Налаштування форми залежно від дії
+            if (actionType === 'buy') {
+                modalTitle.innerText = "Підтвердження покупки";
+                purchaseForm.action = BUY_URL;
+                btnConfirmBuy.style.display = 'block';
+                btnConfirmCart.style.display = 'none';
+                unitPriceDisplay.parentElement.style.display = 'block'; // Показати ціну для покупки
+                actionTotal.parentElement.style.display = 'block'; // Показати загальну суму
+            } else if (actionType === 'cart') {
+                modalTitle.innerText = "Додати набір до кошика";
+                purchaseForm.action = CART_URL;
+                btnConfirmBuy.style.display = 'none';
+                btnConfirmCart.style.display = 'block';
+                // В кошику промокод часто не враховується, але для консистентності залишимо поля
+                unitPriceDisplay.parentElement.style.display = 'block';
+                actionTotal.parentElement.style.display = 'block';
+            }
+
+            purchaseModal.style.display = 'flex';
+            calculateTotal();
+        }
+        
+        function closePurchaseModal() { purchaseModal.style.display = 'none'; }
+
+        function calculateTotal() {
+            let quantity = Math.max(parseInt(actionQty.value) || 1, 1);
+            actionQty.value = quantity;
+            actionQtyHidden.value = quantity;
+
+            const code = actionPromo.value.trim();
+            actionPromoHidden.value = code;
+
+            // Якщо промокод відсутній
+            if (code === "") {
+                actionTotal.innerText = (unitPrice * quantity).toFixed(2);
+                return;
+            }
+
+            // AJAX-запит для валідації промокоду
+            fetch(`${PROMO_VALIDATE_URL}?code=${code}`)
+                .then(res => res.json())
+                .then(data => {
+                    let discount = 0;
+                    if (data.valid) {
+                        discount = data.discount / 100;
+                        // TODO: Додати візуальний зворотний зв'язок про успіх (напр., зелений текст)
+                    } else {
+                        // TODO: Додати візуальний зворотний зв'язок про помилку (напр., червоний текст)
+                    }
+                    const total = unitPrice * quantity * (1 - discount);
+                    actionTotal.innerText = total.toFixed(2);
+                })
+                .catch(() => {
+                    // У разі помилки зв'язку
+                    actionTotal.innerText = (unitPrice * quantity).toFixed(2);
+                });
+        }
+
+        actionQty.addEventListener("input", calculateTotal);
+        actionPromo.addEventListener("input", calculateTotal);
+    </script>
+</body>
+</html>

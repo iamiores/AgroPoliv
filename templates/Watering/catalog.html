@@ -89,12 +89,7 @@
 
         {% for kit in kits %}
             <div class="catalog-card">
-                <a href="{% url 'item_detail' kit.id %}">
-                    {% if kit.image %}
-                        <img src="{{ kit.image }}" alt="{{ kit.name }}" class="catalog-image">
-                    {% else %}
-                        <div class="no-image">Немає зображення</div>
-                    {% endif %}
+                <a href="{% url 'kit_detail' kit.id %}">
 
                     <h3>{{ kit.name }}</h3>
                     <p class="description">{{ kit.description|truncatewords:15 }}</p>

@@ -28,7 +28,9 @@ urlpatterns = [
     path('interactive_board/', views.interactive_board, name='interactive_board'),
     path('interactive_board/add_to_cart/', views.add_board_item, name='add_board_item'),
     path("verify/<int:user_id>/", views.verify_email, name="verify_email"),
-
+    path('kit/<int:kit_id>/', views.kit_detail, name='kit_detail'),
+    path('buy_kit/<int:kit_id>/', views.buy_kit, name='buy_kit'),
+    path('kit/cart/<int:kit_id>/', views.add_kit_to_cart, name='add_kit_to_cart'),
 
 ]
 

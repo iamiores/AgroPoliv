@@ -204,6 +204,116 @@ def item_detail(request, item_id):
     item = get_object_or_404(Item, id=item_id)
     return render(request, 'Watering/item_detail.html', {'item': item})
 
+def kit_detail(request, kit_id):
+    kit = get_object_or_404(Kit, id=kit_id)
+    kit_items = kit.items.all()
+
+    return render(request, 'Watering/kit_detail.html', {
+        'kit': kit,
+        'kit_items': kit_items,
+    })
+
+@login_required
+def buy_kit(request, kit_id):
+    if request.method != "POST":
+        return redirect('kit_detail', kit_id=kit_id)
+    
+    kit = get_object_or_404(Kit, id=kit_id)
+    try:
+        quantity = int(request.POST.get('quantity', '1'))
+        if quantity <= 0:
+             raise ValueError("Quantity must be positive.")
+    except ValueError:
+        messages.error(request, "Некоректна кількість.")
+        return redirect('kit_detail', kit_id=kit_id)
+
+    promo_code_input = request.POST.get('promo_code', '').strip()
+
+    price = kit.price or sum(item.price for item in kit.items.all())
+    discount = Decimal('0')
+    promo = None
+
+    if promo_code_input:
+        try:
+            promo = PromoCode.objects.get(code__iexact=promo_code_input, active=True)
+            discount = Decimal(promo.discount_percent) / Decimal('100')
+        except PromoCode.DoesNotExist:
+            messages.warning(request, "Промокод недійсний або вже використаний.")
+            promo = None
+            discount = Decimal('0')
+
+    total_price = price * quantity * (Decimal('1.0') - discount)
+
+    # Створення замовлення
+    order = Order.objects.create(
+        user=request.user,
+        total_price=total_price,
+        promo_code=promo
+    )
+
+    # Додавання товарів із набору до замовлення та оновлення кількості на складі
+    for item in kit.items.all():
+        OrderItem.objects.create(
+            order=order,
+            item=item,
+            quantity=quantity, # кількість куплених наборів * (кількість одиниць товару в наборі)
+            price_per_item=item.price
+        )
+        # Оновлення кількості на складі
+        item.quantity -= quantity # Якщо item.quantity – це кількість на складі
+        if item.quantity <= 0:
+            item.in_stock = False
+        item.save()
+
+    # Деактивація промокоду після використання
+    if promo:
+        promo.active = False
+        promo.save()
+
+    messages.success(request, f"Ви успішно придбали {quantity} шт. набору {kit.name}")
+    return redirect('catalog')
+
+def add_kit_to_cart(request, kit_id):
+    if request.method != "POST":
+        return redirect('kit_detail', kit_id=kit_id)
+    
+    kit = get_object_or_404(Kit, id=kit_id)
+    try:
+        kit_quantity = int(request.POST.get('quantity', '1'))
+        if kit_quantity <= 0:
+             raise ValueError("Quantity must be positive.")
+    except ValueError:
+        messages.error(request, "Некоректна кількість.")
+        return redirect('kit_detail', kit_id=kit_id)
+
+    # Отримуємо або створюємо кошик
+    cart, created = Cart.objects.get_or_create(user=request.user)
+
+    for item in kit.items.all():
+        item_qty_to_add = item.quantity * kit_quantity 
+
+        # Отримуємо або створюємо елемент кошика для цього товару
+        cart_item, created = CartItem.objects.get_or_create(
+            cart=cart, 
+            item=item
+        )
+        
+        # Оновлюємо кількість
+        if not created:
+            cart_item.quantity += item_qty_to_add
+        else:
+            cart_item.quantity = item_qty_to_add
+        
+        # Додайте перевірку наявності на складі, якщо потрібно
+        # if item.stock_quantity < cart_item.quantity:
+        #    raise Exception(f"Занадто велика кількість товару {item.name}!")
+            
+        cart_item.save()
+
+    messages.success(request, f"Набір '{kit.name}' ({kit_quantity} шт.) додано до кошика.")
+    return redirect('cart')
+
+
 # Покупка окремого товару
 @login_required
 def buy_item(request, item_id):  
@@ -523,6 +633,8 @@ def checkout_selected(request):
 # Інтерактивна дошка для вибору товарів
 @login_required
 def interactive_board(request):
+    if not request.user.is_authenticated:
+        return redirect('home')
     items = Item.objects.all().order_by('category', 'name') 
 
     context = {'items': items}

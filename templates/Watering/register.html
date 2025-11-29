@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static '/css/register.css' %}">
+</head>
+<body>
+    <div id="water"></div>
+    <div class="content">
+        <div class="info-bar">
+            <div class="register-container">
+                <h2>Реєстрація</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Зареєструватися</button>
+                </form>
+            </div>
+            <div class="login-link">
+                <h2>Давно не бачились!</h2>
+                <p>Вже зареєстровані на нашому сайті? <br> Увійдіть тут!</p>
+                <a href="{% url 'login' %}">Увійти</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta/dist/vanta.waves.min.js"></script>
+
+    <script>
+        VANTA.WAVES({
+        el: "#water",
+        mouseControls: true,
+        touchControls: true,
+        minHeight: 200.00,
+        minWidth: 200.00,
+        scale: 1.00,
+        scaleMobile: 1.00,
+        color: 0x5c8129,
+        shininess: 50.00,
+        waveHeight: 20.00,
+        waveSpeed: 0.7
+        })
+    </script>
+</body>
+</html>

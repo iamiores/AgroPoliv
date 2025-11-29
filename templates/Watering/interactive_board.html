@@ -1,0 +1,343 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Конструктор поливу</title>
+    <link rel="stylesheet" href="{% static 'css/interactive_board.css' %}">
+    <link rel="stylesheet" href="{% static 'css/nav.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+    <button class="menu-btn" id="menuBtn">
+        ☰
+    </button>
+    
+    <nav class="side-nav" id="sideNav">
+        <h3 class="menu-title">АгроПолив</h3>
+        <button class="close-btn" id="closeBtn">&times;</button>
+        <ul>
+        <li><a href="{% url 'home' %}"><span class="icon material-symbols-outlined">home</span>  Головна</a></li>
+        <li><a href="{% url 'catalog' %}"><span class="icon material-symbols-outlined">local_mall</span>  Каталог</a></li>
+        <li><a href="{% url 'articles' %}"><span class="icon material-symbols-outlined">article</span>  Статті</a></li>
+        <li><a href="{% url 'services' %}" ><span class="icon material-symbols-outlined">home_repair_service</span>  Послуги</a></li>
+        {% if request.user.is_authenticated %}
+            <li><a href="{% url 'interactive_board' %}" class="now"><span class="icon material-symbols-outlined">format_paint</span>  Інтерактив дошка</a></li>
+            <li><a href="{% url 'cart' %}"><span class="icon material-symbols-outlined">garden_cart</span>  Кошик</a></li>
+            <li><a href="{% url 'logout' %}"><span class="icon material-symbols-outlined">logout</span>  Вийти</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}"><span class="icon material-symbols-outlined">logout</span>  Вхід</a></li>
+        {% endif %}
+        </ul>
+    </nav>
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="effects-container">
+        <div class="color-overlay"></div>
+        <div class="pulse-effect"></div>
+        <div class="wave-edges"></div>
+        <div class="fireflies">
+            <div class="firefly" style="top: 20%; left: 10%;"></div>
+            <div class="firefly" style="top: 80%; left: 90%;"></div>
+            <div class="firefly" style="top: 50%; left: 45%;"></div>
+            <div class="firefly" style="top: 10%; left: 70%;"></div>
+            <div class="firefly" style="top: 65%; left: 30%;"></div>
+        </div>
+    </div>
+    <div class="builder-container">
+
+        <div class="inventory-panel">
+            <h2>🛠️ Доступні елементи</h2>
+
+            <div id="items-list" class="item-list">
+                {% for item in items %}
+                    <div class="draggable-item"
+                        draggable="true"
+                        data-id="{{ item.id }}"
+                        data-type="item"
+                        data-name="{{ item.name }}"
+                        data-price="{{ item.price|stringformat:"f" }}"
+                        data-category="{{ item.category }}"
+                        data-is-linear="{% if item.category == 'hoses' %}true{% else %}false{% endif %}"
+                        data-image-url="{% if item.image %}{% static item.image %}{% else %}{% static 'images/default_icon.png' %}{% endif %}">
+                        
+                        <img src="{% if item.image %}{% static item.image %}{% else %}{% static 'images/default_icon.png' %}{% endif %}" 
+                             alt="{{ item.name }}" class="item-icon">
+                        <span class="item-label">
+                            {{ item.name }} 
+                            ({% if item.category == 'hoses' %}{{ item.price }} ₴/м{% else %}{{ item.price }} ₴{% endif %})
+                        </span>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <h3>🌱 Рослини</h3>
+            <div id="plants-list" class="item-list">
+            </div>
+
+            <h3>💡 Порада</h3>
+            <p style="font-size:0.9rem; color:rgba(242, 255, 199, 0.7);">
+                Розміщуйте шланги біля рослин, щоб покрити всю грядку. 
+                Високі рослини ставте ззаду, низькі — спереду. 
+                Декоративні рослини можна поєднувати між товарами для зручності поливу.
+            </p>
+
+        </div>
+
+        <div class="design-canvas-wrapper">
+            <h2>🌱 Робоча область (Поле)</h2>
+            <div id="design-canvas"></div>
+            <button id="clear-canvas">Очистити поле</button>
+        </div>
+
+        <div class="cost-panel">
+            <h2>💰 Розрахунок вартості</h2>
+            <div id="summary-items">
+                <p>Елементи поки що не вибрано.</p>
+            </div>
+            <h3>Загальна вартість: <span id="total-cost">0.00</span> ₴</h3>
+            <form method="post" action="{% url 'add_board_item' %}" id="add-to-cart-form">
+                {% csrf_token %}
+                
+                <input type="hidden" name="board_data" id="board-data-input">
+                
+                <button type="submit" id="add-to-cart-btn" class="checkout-btn">🛒 Додати в кошик</button>
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById("menuBtn");
+            const sideNav = document.getElementById("sideNav");
+            const closeBtn = document.getElementById("closeBtn");
+            const overlay = document.getElementById("overlay");
+    
+            menuBtn.addEventListener("click", () => {
+                sideNav.classList.add("active");
+                overlay.classList.add("active");
+            });
+    
+            closeBtn.addEventListener("click", () => {
+                sideNav.classList.remove("active");
+                overlay.classList.remove("active");
+            });
+    
+            overlay.addEventListener("click", () => {
+                sideNav.classList.remove("active");
+                overlay.classList.remove("active");
+            });
+    
+            const canvas = document.getElementById('design-canvas');
+        const summaryItems = document.getElementById('summary-items');
+        const totalCostDisplay = document.getElementById('total-cost');
+        const clearCanvasBtn = document.getElementById('clear-canvas');
+        
+        // Отримання елементів форми
+        const addToCartForm = document.getElementById('add-to-cart-form');
+        const boardDataInput = document.getElementById('board-data-input');
+        const addToCartBtn = document.getElementById('add-to-cart-btn');
+        
+        const plants = [
+            {id: 'plant1', name: 'Пшениця', image: '{% static "images/plant1.png" %}'},
+            {id: 'plant2', name: 'Помідор', image: '{% static "images/plant2.png" %}'},
+            {id: 'plant3', name: 'Салат', image: '{% static "images/plant3.png" %}'},
+            {id: 'plant4', name: 'Морква', image: '{% static "images/plant4.png" %}'},
+        ];
+
+        const plantsList = document.getElementById('plants-list');
+
+        plants.forEach(p => {
+            const el = document.createElement('div');
+            el.className = 'draggable-item';
+            el.draggable = true;
+            el.dataset.type = 'plant';
+            el.dataset.name = p.name;
+            el.dataset.id = p.id;
+            el.dataset.imageUrl = p.image;
+
+            el.innerHTML = `<img src="${p.image}" class="item-icon"> <span class="item-label">${p.name}</span>`;
+            plantsList.appendChild(el);
+        });
+
+        const allDraggables = document.querySelectorAll('.draggable-item');
+
+        let draggedElementData = null;
+        let placedElements = []; // Тут зберігаються всі розміщені елементи
+
+        allDraggables.forEach(item => {
+            item.addEventListener('dragstart', e => {
+                draggedElementData = {...e.target.dataset};
+
+                if (draggedElementData.type === 'item') {
+                    draggedElementData.price = parseFloat(draggedElementData.price);
+                } else {
+                    draggedElementData.price = 0; 
+                }
+
+                e.dataTransfer.setData('text/plain', JSON.stringify(draggedElementData));
+            });
+            item.addEventListener('dragend', () => {}); 
+        });
+
+        canvas.addEventListener('dragover', e => e.preventDefault());
+
+
+        canvas.addEventListener('drop', e => {
+            e.preventDefault();
+
+            if (!draggedElementData) return;
+
+            let itemQuantity = 1;
+            if (draggedElementData.type === 'item' && draggedElementData.isLinear === 'true') {
+                const inputLength = prompt(`Введіть довжину шланга "${draggedElementData.name}" у метрах:`, 10);
+                const qty = parseFloat(inputLength);
+
+                if (isNaN(qty) || qty <= 0) {
+                    alert("Недійсна довжина. Скидання скасовано.");
+                    draggedElementData = null; 
+                    return; 
+                }
+                itemQuantity = qty;
+            }
+            draggedElementData.quantity = itemQuantity;
+
+            const newEl = document.createElement('div');
+            newEl.className = 'design-element';
+            newEl.style.position = 'absolute';
+            const rect = canvas.getBoundingClientRect();
+            // Позиціонування
+            newEl.style.left = (e.clientX - rect.left - 25) + 'px';
+            newEl.style.top = (e.clientY - rect.top - 25) + 'px';
+
+            // Генерація вмісту елемента на канві
+            if (draggedElementData.type === 'plant') {
+                newEl.innerHTML = `<img src="${draggedElementData.imageUrl}" alt="${draggedElementData.name}">`;
+                newEl.style.width = '50px';
+                newEl.style.height = '50px';
+            } else if (draggedElementData.type === 'item') {
+                if (draggedElementData.isLinear === 'true') {
+                    newEl.classList.add('hose');
+                    newEl.innerText = `${itemQuantity} м`;
+                    newEl.style.width = '100px';
+                    newEl.style.height = '15px';
+                } else {
+                    newEl.innerHTML = `<img src="${draggedElementData.imageUrl}" alt="${draggedElementData.name}">`;
+                    newEl.style.width = '50px';
+                    newEl.style.height = '50px';
+                }
+            }
+
+            newEl.dataset.id = draggedElementData.id;
+            newEl.dataset.type = draggedElementData.type;
+
+            newEl.dataset.price = draggedElementData.price || 0;
+            newEl.dataset.quantity = draggedElementData.quantity || 1;
+
+            canvas.appendChild(newEl);
+
+            // ⚠️ Додаємо елемент у масив placedElements
+            placedElements.push({...draggedElementData, element: newEl, quantity: itemQuantity});
+            updateCalculations();
+
+            makeMovable(newEl);
+            draggedElementData = null;
+        });
+
+        // ФУНКЦІЇ РУХУ ТА РОЗРАХУНКУ залишаються без змін
+        function makeMovable(el) {
+            let isDown = false;
+            let offset = [0,0];
+            el.addEventListener('mousedown', e => { 
+                isDown = true; 
+                offset = [el.offsetLeft - e.clientX, el.offsetTop - e.clientY]; 
+                el.style.zIndex = 20; 
+            });
+            document.addEventListener('mouseup', () => { 
+                isDown = false; 
+                el.style.zIndex = 10; 
+            });
+            document.addEventListener('mousemove', e => {
+                if (!isDown) return;
+                let newX = e.clientX + offset[0];
+                let newY = e.clientY + offset[1];
+                const canvasRect = canvas.getBoundingClientRect();
+                newX = Math.max(0, Math.min(newX, canvasRect.width - el.offsetWidth));
+                newY = Math.max(0, Math.min(newY, canvasRect.height - el.offsetHeight));
+                el.style.left = newX + 'px';
+                el.style.top = newY + 'px';
+            });
+        }
+        
+
+        function updateCalculations() {
+            let total = 0;
+            let html = '';
+
+            // Фільтруємо лише товари для розрахунку (не рослини)
+            const itemsForCalculation = placedElements.filter(p => p.type === 'item');
+
+            if (!itemsForCalculation.length) { 
+                html = '<p>Елементи поки що не вибрано.</p>'; 
+                // Вимикаємо кнопку, якщо немає товарів
+                if(addToCartBtn) addToCartBtn.disabled = true;
+            } else {
+                itemsForCalculation.forEach((item) => {
+                    const price = parseFloat(item.price) || 0;
+                    const isLinear = item.isLinear === 'true';
+                    const quantity = parseFloat(item.quantity) || 1;
+
+                    const cost = isLinear ? price * quantity : price * quantity; // Потрібно використовувати кількість для всіх товарів
+                    total += cost;
+
+                    // Пошук індексу у placedElements для видалення            
+                    const placedIndex = placedElements.findIndex(p => p.element === item.element);
+
+                    html += `<p data-index="${placedIndex}">${item.name} (${quantity}${isLinear ? ' м' : ''}) - ${cost.toFixed(2)} ₴ <span class="remove-item-btn" data-index="${placedIndex}">[X]</span></p>`;
+                });
+                if(addToCartBtn) addToCartBtn.disabled = false;
+            }
+            summaryItems.innerHTML = html;
+            totalCostDisplay.innerText = total.toFixed(2);
+            document.querySelectorAll('.remove-item-btn').forEach(btn => btn.addEventListener('click', removeItem));
+        }
+
+        function removeItem(e) {
+            const idx = parseInt(e.target.dataset.index);
+            if(placedElements[idx] && placedElements[idx].element) {
+                placedElements[idx].element.remove();
+            }
+            // Видаляємо та оновлюємо
+            placedElements.splice(idx, 1);
+            updateCalculations();
+        }
+
+        clearCanvasBtn.addEventListener('click', () => { canvas.innerHTML=''; placedElements=[]; updateCalculations(); });
+        
+
+        if(addToCartForm) {
+            addToCartForm.addEventListener('submit', (e) => {
+                // 1. Фільтруємо лише ТОВАРИ
+                const itemsToCart = placedElements
+                    .filter(p => p.type === 'item')
+                    .map(p => ({
+                        id: p.id,
+                        quantity: parseFloat(p.quantity) || 1, 
+                    }));
+
+                if (itemsToCart.length === 0) {
+                    e.preventDefault(); // Зупиняємо відправку форми
+                    alert("На полі немає предметів для поливу для додавання в кошик!");
+                    return;
+                }
+                const dataToSend = JSON.stringify(itemsToCart);
+
+                boardDataInput.value = dataToSend;
+            });
+        }
+        updateCalculations();
+    });
+    </script>
+</body>
+</html>

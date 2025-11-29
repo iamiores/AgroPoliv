@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static '/css/article.css' %}">
+    <link rel="stylesheet" href="{% static '/css/nav.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <title>Статті</title>
+</head>
+<body>
+    <button class="menu-btn" id="menuBtn">
+        ☰
+    </button>
+    
+    <nav class="side-nav" id="sideNav">
+        <h3 class="menu-title">АгроПолив</h3>
+        <button class="close-btn" id="closeBtn">&times;</button>
+        <ul>
+        <li><a href="{% url 'home' %}"><span class="icon material-symbols-outlined">home</span>  Головна</a></li>
+        <li><a href="{% url 'catalog' %}"><span class="icon material-symbols-outlined">local_mall</span>  Каталог</a></li>
+        <li><a href="{% url 'articles' %}" class="now"><span class="icon material-symbols-outlined">article</span>  Статті</a></li>
+        <li><a href="{% url 'services' %}"><span class="icon material-symbols-outlined">home_repair_service</span>  Послуги</a></li>
+        {% if request.user.is_authenticated %}
+            <li><a href="{% url 'interactive_board' %}"><span class="icon material-symbols-outlined">format_paint</span>  Інтерактив дошка</a></li>
+            <li><a href="{% url 'cart' %}"><span class="icon material-symbols-outlined">garden_cart</span>  Кошик</a></li>
+            <li><a href="{% url 'logout' %}"><span class="icon material-symbols-outlined">logout</span>  Вийти</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}"><span class="icon material-symbols-outlined">logout</span>  Вхід</a></li>
+        {% endif %}
+        </ul>
+    </nav>
+    <div class="overlay" id="overlay"></div>
+
+
+    <h1>Статті</h1>
+    <p>Ми інтерв'ювали українських експертів з теми поливу щодо популярних запитань користувачів.<br> Якщо ви не бачите потрібної вам статті, можете надіслати запитання нижче.</p>
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'submit_question' %}">
+            {% csrf_token %}
+            {{ question_form.as_p }}
+            <input type="hidden" value="{{ user.id }}" name="user_id">
+            <div class="button">
+                <input type="submit" value="Надіслати">
+            </div>
+        </form>
+    {% else %}
+        <p>Будь ласка, <a href="{% url 'login' %}">увійдіть</a>, щоб надіслати питання.</p>
+    {% endif %}
+
+
+    <ul class="article-list">
+        {% for article in articles %}
+            <a href="{% url 'article_detail' article.id %}">
+                <li class="article-item">
+                    <h4>{{ article.title }}</h4>
+                    <p>{{ article.content|truncatewords:30 }}</p>
+                    <div class="info">
+                        <small>Опубліковано: {{ article.published_date }}</small>
+                        <small>Автор: {{ article.author.username }}</small>
+                    </div>
+                </li>
+            </a>
+        {% empty %}
+            <li>Немає доступних статей.</li>
+        {% endfor %}
+    </ul>
+
+    <section class="contacts">
+        <div class="contact-info">
+            <h2 class="info-item left">АгроПолив</h2>
+            <div class="info-item center ">
+                <h2>Контакти</h2>
+                <p><strong>+380 97 123 45 67</strong></p>
+                <p><strong>info@agropoliv.ua</strong></p>
+                <p><strong>м. Миколаїв, вул. Сонячна 7</strong></p>
+            </div>
+            <div class="info-item right">
+                <p>Дякуємо за довіру!</p>
+                <p>© 2025 АгроПолив. Всі права захищені.</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const menuBtn = document.getElementById("menuBtn");
+        const sideNav = document.getElementById("sideNav");
+        const closeBtn = document.getElementById("closeBtn");
+        const overlay = document.getElementById("overlay");
+
+        menuBtn.addEventListener("click", () => {
+        sideNav.classList.add("active");
+        overlay.classList.add("active");
+        });
+
+        closeBtn.addEventListener("click", () => {
+        sideNav.classList.remove("active");
+        overlay.classList.remove("active");
+        });
+
+        overlay.addEventListener("click", () => {
+        sideNav.classList.remove("active");
+        overlay.classList.remove("active");
+        });
+
+        function createFireflies() {
+            const firefliesContainer = document.getElementById('firefliesContainer');
+            const fireflyCount = 15; 
+            
+            for (let i = 0; i < fireflyCount; i++) {
+                const firefly = document.createElement('div');
+                firefly.className = 'firefly';
+                
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                const animationDelay = Math.random() * 12;
+                
+                firefly.style.left = left + 'vw';
+                firefly.style.top = top + 'vh';
+                firefly.style.animationDelay = animationDelay + 's';
+                
+                firefliesContainer.appendChild(firefly);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createFireflies();
+        });
+    </script>
+
+    <div class="effects-container">
+        <div class="color-overlay"></div>
+        <div class="pulse-effect"></div>
+        <div class="fireflies" id="firefliesContainer"></div>
+        <div class="wave-edges"></div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,368 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Кошик</title>
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <link rel="stylesheet" href="{% static '/css/nav.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+    <button class="menu-btn" id="menuBtn">
+        ☰
+    </button>
+    
+    <nav class="side-nav" id="sideNav">
+        <h3 class="menu-title">АгроПолив</h3>
+        <button class="close-btn" id="closeBtn">&times;</button>
+        <ul>
+        <li><a href="{% url 'home' %}"><span class="icon material-symbols-outlined">home</span>  Головна</a></li>
+        <li><a href="{% url 'catalog' %}"><span class="icon material-symbols-outlined">local_mall</span>  Каталог</a></li>
+        <li><a href="{% url 'articles' %}"><span class="icon material-symbols-outlined">article</span>  Статті</a></li>
+        <li><a href="{% url 'services' %}"><span class="icon material-symbols-outlined">home_repair_service</span>  Послуги</a></li>
+        {% if request.user.is_authenticated %}
+            <li><a href="{% url 'interactive_board' %}"><span class="icon material-symbols-outlined">format_paint</span>  Інтерактив дошка</a></li>
+            <li><a href="{% url 'cart' %}" class="now"><span class="icon material-symbols-outlined">garden_cart</span>  Кошик</a></li>
+            <li><a href="{% url 'logout' %}"><span class="icon material-symbols-outlined">logout</span>  Вийти</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}"><span class="icon material-symbols-outlined">logout</span>  Вхід</a></li>
+        {% endif %}
+        </ul>
+    </nav>
+    <div class="overlay" id="overlay"></div>
+
+
+    <div class="effects-container">
+        <div class="color-overlay"></div>
+        <div class="wave-edges"></div>
+    </div>
+
+    <h1>Кошик</h1>
+
+    <button id="filter-btn">Фільтри</button>
+
+    <div id="filter-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="filter-modal">&times;</span>
+            <form method="get" action="" class="filter-form">
+                <div class="search-bar-container">
+                    <input type="text" name="search" value="{{ request.GET.search }}" placeholder="Пошук товару..." class="search-input"> 
+                </div>
+                <div class="other-filters-container">
+                    <select name="category">
+                        <option value="">Всі категорії</option>
+                        {% for code, name in Item.CATEGORY_CHOICES %} 
+                            <option value="{{ code }}" {% if request.GET.category == code %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="type">
+                        <option value="">Всі типи</option>
+                        <option value="Item" {% if request.GET.type == "Item" %}selected{% endif %}>Окремий предмет</option>
+                        <option value="Kit" {% if request.GET.type == "Kit" %}selected{% endif %}>Готовий сет</option>
+                    </select>
+                    <input type="number" name="price_min" value="{{ request.GET.price_min }}" placeholder="Мін. ціна" min="0">
+                    <input type="number" name="price_max" value="{{ request.GET.price_max }}" placeholder="Макс. ціна" min="0">
+                </div>
+                <button type="submit">Фільтрувати</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="cart-items">
+        {% if cart_items %}
+            {% for cart_item in cart_items %}
+            <div class="cart-item" 
+                    data-item-id="{{ cart_item.id }}" 
+                    data-item-price="{{ cart_item.item.price }}" 
+                    data-item-qty="{{ cart_item.quantity }}">
+                <h3>{{ cart_item.item.name }}</h3>
+                <p>Ціна: {{ cart_item.item.price }} ₴</p>
+                <p>Кількість: {{ cart_item.quantity }}</p>
+                <p>Сума: {{ cart_item.subtotal }} ₴</p>
+                
+                <button class="change-qty-btn" data-cart-item-id="{{ cart_item.id }}" data-current-qty="{{ cart_item.quantity }}">Змінити кількість</button>
+                <button class="delete-btn" data-cart-item-id="{{ cart_item.id }}">Видалити</button>
+                <a href="{% url 'item_detail' cart_item.item.id %}"><button>Деталі</button></a> 
+            </div>
+            {% endfor %}
+            <div class="checkout-summary">
+                <h3>Загальна сума: {{ total_price }} ₴</h3>
+                <button id="checkout-btn" class="checkout-button">Оформити замовлення</button>
+            </div>
+        {% else %}
+            <p>Кошик порожній.</p>
+        {% endif %}
+    </div>
+
+    <div class="modal" id="selectionModal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeSelectionModal()" data-modal="selectionModal">&times;</span>
+            <h2>Виберіть товари для покупки</h2>
+            
+            <div id="item-selection-list" class="selection-list">
+                {% for cart_item in cart_items %}
+                    <label class="item-checkbox-label">
+                        <input type="checkbox" 
+                               class="item-checkbox" 
+                               data-id="{{ cart_item.id }}" 
+                               data-price="{{ cart_item.item.price }}" 
+                               data-qty="{{ cart_item.quantity }}" 
+                               checked>
+                        {{ cart_item.item.name }} ({{ cart_item.quantity }} шт. за {{ cart_item.subtotal }} ₴)
+                    </label>
+                {% endfor %}
+            </div>
+
+            <button id="confirm-selection-btn">Оформити покупку</button>
+        </div>
+    </div>
+
+    <div class="modal" id="confirmationModal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeConfirmationModal()" data-modal="confirmationModal">&times;</span>
+            <h2>Підтвердження замовлення</h2>
+            
+            <p>Вибрані товари: <strong id="selected-items-count">0</strong></p>
+            <p>Попередня сума: <strong id="currentTotalPrice">0.00</strong> ₴</p>
+
+            <form action="{% url 'checkout_selected' %}" method="POST" id="final-checkout-form">
+                {% csrf_token %}
+                <input type="hidden" name="selected_cart_items" id="selectedItemsInput" value="">
+                
+                <label for="checkoutPromo">Промокод:</label>
+                <input type="text" name="promo_code" id="checkoutPromo" placeholder="Введіть код">
+                
+                <p>Знижка: <strong id="discountDisplay">0%</strong></p>
+                <p>Фінальна сума: <strong id="finalTotalPrice">0.00</strong> ₴</p>
+
+                <button type="submit" class="btn-confirm">Підтвердити та оплатити</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="qty-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="qty-modal">&times;</span>
+            <form id="qty-form" method="post" action="">
+                {% csrf_token %}
+                <label>Нова кількість:</label>
+                <input type="number" name="quantity" min="1" value="1" id="qty-input">
+                <button type="submit">Оновити</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="delete-modal" class="modal">
+        <div class="modal-content">
+            <p>Ви впевнені, що хочете видалити цей товар?</p>
+            <form id="delete-form" method="post" action="">
+                {% csrf_token %}
+                <div class="button-group">
+                    <button type="submit">Так, видалити</button>
+                    <button type="button" id="cancel-delete">Скасувати</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+    // --- Бічне навігаційне меню ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuBtn = document.getElementById("menuBtn");
+        const sideNav = document.getElementById("sideNav");
+        const closeBtn = document.getElementById("closeBtn");
+        const overlay = document.getElementById("overlay");
+
+        menuBtn.addEventListener("click", () => {
+        sideNav.classList.add("active");
+        overlay.classList.add("active");
+        });
+
+        closeBtn.addEventListener("click", () => {
+        sideNav.classList.remove("active");
+        overlay.classList.remove("active");
+        });
+
+        overlay.addEventListener("click", () => {
+        sideNav.classList.remove("active");
+        overlay.classList.remove("active");
+        });
+
+        const filterBtn = document.getElementById('filter-btn');
+        const filterModal = document.getElementById('filter-modal');
+        const qtyModal = document.getElementById('qty-modal');
+        const deleteModal = document.getElementById('delete-modal');
+        
+        const qtyButtons = document.querySelectorAll('.change-qty-btn');
+        const qtyForm = document.getElementById('qty-form');
+        const qtyInput = document.getElementById('qty-input');
+        
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        const deleteForm = document.getElementById('delete-form');
+        
+        const cancelDeleteBtn = document.getElementById('cancel-delete');
+        const closeSpans = document.querySelectorAll('.modal-content .close');
+
+        closeSpans.forEach(span => {
+            span.addEventListener('click', () => {
+                const modalId = span.dataset.modal;
+                if (modalId) {
+                    document.getElementById(modalId).style.display = 'none';
+                }
+            });
+        });
+        
+
+        cancelDeleteBtn.addEventListener('click', () => deleteModal.style.display = 'none');
+
+        filterBtn.addEventListener('click', () => filterModal.style.display = 'flex');
+
+        // --- Оновлення кількості ---
+        qtyButtons.forEach(btn => {
+            btn.addEventListener('click', () => { 
+                const cartItemId = btn.dataset.cartItemId;
+                const currentQty = btn.dataset.currentQty;
+                
+                qtyForm.action = `/cart/update/${cartItemId}/`; 
+                
+                qtyInput.value = currentQty;
+                qtyModal.style.display = 'flex';
+            });
+        });
+
+        // --- Видалення ---
+        deleteButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const cartItemId = btn.dataset.cartItemId;
+                
+                deleteForm.action = `/cart/remove/${cartItemId}/`;
+                
+                deleteModal.style.display = 'flex';
+            });
+        });
+
+        // --- Закриття по кліку поза модальним вікном ---
+        window.addEventListener('click', e => {
+            if (e.target === filterModal) filterModal.style.display = 'none';
+            if (e.target === qtyModal) qtyModal.style.display = 'none';
+            if (e.target === deleteModal) deleteModal.style.display = 'none';
+        });
+    });
+
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const selectionModal = document.getElementById('selectionModal');
+    const confirmationModal = document.getElementById('confirmationModal');
+    const confirmSelectionBtn = document.getElementById('confirm-selection-btn');
+    const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+
+    const selectedItemsInput = document.getElementById('selectedItemsInput');
+    const currentTotalPriceDisplay = document.getElementById('currentTotalPrice');
+    const finalTotalPriceDisplay = document.getElementById('finalTotalPrice');
+    const discountDisplay = document.getElementById('discountDisplay');
+    const selectedItemsCountDisplay = document.getElementById('selected-items-count');
+    const checkoutPromoInput = document.getElementById('checkoutPromo');
+
+    // --- Збір даних про товари ---
+    const itemData = {};
+    document.querySelectorAll('.cart-item').forEach(el => {
+        const id = el.dataset.itemId;
+        itemData[id] = {
+            price: parseFloat(el.dataset.itemPrice),
+            qty: parseInt(el.dataset.itemQty)
+        };
+    });
+
+    let currentRawTotal = 0;
+    let currentDiscountPercent = 0;
+
+    function calculateSelectedTotal() {
+        let total = 0;
+        let selectedIds = [];
+        let count = 0;
+
+        itemCheckboxes.forEach(cb => {
+            if (cb.checked) {
+                const id = cb.dataset.id;
+                const data = itemData[id];
+                if (!data) return;
+                total += data.price * data.qty;
+                selectedIds.push(id);
+                count++;
+            }
+        });
+
+        currentRawTotal = total;
+        selectedItemsCountDisplay.innerText = count;
+        currentTotalPriceDisplay.innerText = total.toFixed(2);
+
+        return { total, selectedIds, count };
+    }
+
+    function calculateFinalTotal(discountPercent = 0) {
+        finalTotalPriceDisplay.innerText = (currentRawTotal * (1 - discountPercent / 100)).toFixed(2);
+    }
+
+    // --- Відкриття модалки вибору товарів ---
+    checkoutBtn.addEventListener('click', () => {
+        selectionModal.style.display = 'flex';
+    });
+
+    // --- Підтвердження вибору ---
+    confirmSelectionBtn.addEventListener('click', () => {
+        const { total, selectedIds, count } = calculateSelectedTotal();
+
+        if (count === 0) {
+            alert("Будь ласка, виберіть хоча б один товар для покупки.");
+            return;
+        }
+
+        selectedItemsInput.value = selectedIds.join(',');
+        currentDiscountPercent = 0;
+        discountDisplay.innerText = '0%';
+        calculateFinalTotal(0);
+
+        selectionModal.style.display = 'none';
+        confirmationModal.style.display = 'flex';
+    });
+
+    // --- Автоматичне перерахування при зміні чекбокса ---
+    itemCheckboxes.forEach(cb => {
+        cb.addEventListener('change', calculateSelectedTotal);
+    });
+
+    // --- Промокод ---
+    checkoutPromoInput.addEventListener('input', function() {
+        const code = this.value.trim();
+        if (!code) {
+            currentDiscountPercent = 0;
+            discountDisplay.innerText = '0%';
+            calculateFinalTotal(0);
+            return;
+        }
+
+        fetch(`{% url 'validate_promo' %}?code=${code}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.valid) {
+                    currentDiscountPercent = data.discount;
+                    discountDisplay.innerText = `${data.discount}%`;
+                } else {
+                    currentDiscountPercent = 0;
+                    discountDisplay.innerText = '0% (Недійсний)';
+                }
+                calculateFinalTotal(currentDiscountPercent);
+            })
+            .catch(() => {
+                currentDiscountPercent = 0;
+                discountDisplay.innerText = '0% (Помилка)';
+                calculateFinalTotal(0);
+            });
+    });
+
+
+    </script>
+
+</body>
+</html>

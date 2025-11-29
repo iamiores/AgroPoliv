@@ -1,0 +1,417 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&family=Impact&display=swap');
+
+/* === ГЛОБАЛЬНІ СТИЛІ ТА ФОНОВІ ЕФЕКТИ (З НОВОГО CSS) === */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Колірна палітра: 
+   Фон: Темний (24,23,2), (60, 58, 5) - золотисто-чорний
+   Акцент: Золотий/Жовто-зелений (225, 216, 22), (156, 151, 35)
+*/
+
+/* Ефект переливання кольорів фону */
+@keyframes gradientShift {
+    0% {
+        background: radial-gradient(ellipse at top, rgba(60, 58, 5, 0.92), rgba(24, 23, 2, 0.98));
+    }
+    25% {
+        background: radial-gradient(ellipse at right top, rgba(45, 43, 4, 0.92), rgba(30, 29, 3, 0.98));
+    }
+    50% {
+        background: radial-gradient(ellipse at center, rgba(35, 34, 4, 0.92), rgba(40, 38, 4, 0.98));
+    }
+    75% {
+        background: radial-gradient(ellipse at left top, rgba(50, 48, 5, 0.92), rgba(28, 27, 3, 0.98));
+    }
+    100% {
+        background: radial-gradient(ellipse at top, rgba(60, 58, 5, 0.92), rgba(24, 23, 2, 0.98));
+    }
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background: radial-gradient(ellipse at top, rgba(60, 58, 5, 0.92), rgba(24, 23, 2, 0.98));
+    color: #fdfdfd;
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.6;
+    z-index: 0;
+    animation: gradientShift 15s ease-in-out infinite;
+}
+
+/* Контейнер для ефектів */
+.effects-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Ефект переливання кольорів */
+.color-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        rgba(30, 58, 5, 0.3),
+        rgba(60, 88, 12, 0.2), 
+        rgba(90, 118, 25, 0.25),
+        rgba(120, 148, 35, 0.2), 
+        rgba(156, 151, 35, 0.3) 
+    );
+    background-size: 400% 400%;
+    animation: colorFlow 12s ease-in-out infinite;
+    mix-blend-mode: overlay;
+}
+
+@keyframes colorFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Пульсуючий ефект */
+.pulse-effect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(
+        circle,
+        rgba(90, 118, 25, 0.15) 0%, 
+        rgba(60, 88, 12, 0.1) 40%, 
+        transparent 70%
+    );
+    animation: pulse 10s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.2;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        opacity: 0.4;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+/* Ефект світлячків */
+.fireflies {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.firefly {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(
+        circle,
+        rgba(225, 216, 22, 0.9), 
+        rgba(156, 151, 35, 0.7), 
+        rgba(120, 148, 35, 0.5) 
+    );
+    border-radius: 50%;
+    filter: blur(0.5px);
+    box-shadow: 
+        0 0 8px rgba(225, 216, 22, 0.6),
+        0 0 15px rgba(156, 151, 35, 0.4);
+    animation: floatFirefly 12s ease-in-out infinite, twinkle 3s ease-in-out infinite;
+}
+
+.firefly:nth-child(2n) {
+    width: 4px;
+    height: 4px;
+    background: radial-gradient(
+        circle,
+        rgba(120, 148, 35, 0.9),
+        rgba(90, 118, 25, 0.6), 
+        rgba(60, 88, 12, 0.4) 
+    );
+    animation: floatFirefly 15s ease-in-out infinite, twinkle 4s ease-in-out infinite;
+    box-shadow: 
+        0 0 6px rgba(120, 148, 35, 0.5),
+        0 0 12px rgba(90, 118, 25, 0.3);
+}
+
+.firefly:nth-child(3n) {
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.9),
+        rgba(225, 216, 22, 0.7),
+        rgba(156, 151, 35, 0.5)
+    );
+    animation: floatFirefly 8s ease-in-out infinite, twinkle 2s ease-in-out infinite;
+    box-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.4),
+        0 0 20px rgba(225, 216, 22, 0.3);
+}
+
+@keyframes floatFirefly {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+    25% { transform: translate(20px, -30px) scale(1.2); opacity: 0.8; }
+    50% { transform: translate(-15px, -50px) scale(0.9); opacity: 0.5; }
+    75% { transform: translate(25px, -20px) scale(1.1); opacity: 0.7; }
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; filter: blur(0.5px) brightness(1); }
+    50% { opacity: 0.9; filter: blur(0.8px) brightness(1.5); }
+}
+
+/* Хвилястий ефект на краях */
+.wave-edges {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at 0% 0%, rgba(60, 88, 12, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 0%, rgba(90, 118, 25, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 0% 100%, rgba(120, 148, 35, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 100%, rgba(156, 151, 35, 0.1) 0%, transparent 50%);
+    animation: waveMove 20s ease-in-out infinite;
+}
+
+@keyframes waveMove {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+/* === СТИЛІ КОНСТРУКТОРА === */
+
+.builder-container {
+    display: flex;
+    gap: 20px;
+    padding: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative; /* Щоб бути над фоновими ефектами */
+    z-index: 10;
+}
+
+.inventory-panel, .cost-panel, .design-canvas-wrapper {
+    /* Використовуємо темний фон з прозорістю та блюром */
+    background: rgba(70, 67, 10, 0.25);
+    border-radius: 20px;
+    border: 1px solid rgba(225, 216, 22, 0.2);
+    padding: 20px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 15px rgba(225, 216, 22, 0.1);
+}
+
+.inventory-panel, .cost-panel {
+    width: 280px; 
+    max-height: 600px; 
+    overflow-y: auto; 
+    padding: 15px;
+}
+/* Додаємо невелику стилізацію для скролу */
+.inventory-panel::-webkit-scrollbar { width: 8px; }
+.inventory-panel::-webkit-scrollbar-thumb {
+    background-color: rgba(225, 216, 22, 0.5);
+    border-radius: 4px;
+}
+.inventory-panel::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.design-canvas-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+h2, h3 {
+    color: rgb(225, 216, 22); /* Яскравий золотий */
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    margin-bottom: 15px;
+}
+
+.inventory-panel p { 
+    font-size: 0.9rem; 
+    color: rgba(242, 255, 199, 0.7); 
+    margin-top: 10px; 
+}
+
+/* Списки елементів */
+.item-list { display: flex; flex-wrap: wrap; gap: 10px; }
+.draggable-item {
+    background: rgba(90, 88, 12, 0.35); /* Трохи темніший фон для елементів */
+    border: 1px solid rgba(225, 216, 22, 0.3);
+    border-radius: 12px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: grab;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+.draggable-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 15px rgba(225, 216, 22, 0.6);
+    background: rgba(156, 151, 35, 0.35); /* Легке підсвічування при наведенні */
+}
+.item-icon { width: 40px; height: 40px; border-radius: 6px; }
+.item-label { color: #fff; font-size: 0.9rem; }
+
+
+/* Canvas */
+#design-canvas {
+    width: 100%;
+    height: 600px;
+    /* Більш темний, "земляний" фон для поля */
+    background: rgba(35, 34, 4, 0.5); 
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+.design-element {
+    cursor: grab;
+    user-select: none;
+    position: absolute;
+    transition: box-shadow 0.2s;
+}
+
+.design-element:hover {
+    box-shadow: 0 0 10px rgba(225, 216, 22, 0.8);
+}
+
+.design-element img { display: block; width: 50px; height: 50px; border-radius: 6px; }
+
+.hose {
+    background: rgba(156, 151, 35, 0.8); /* Більш насичений золотистий колір для шланга */
+    color: #000;
+    font-weight: bold;
+    text-align: center;
+    line-height: 15px;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(156, 151, 35, 0.9);
+}
+
+/* Панель вартості */
+#summary-items p {
+    margin-bottom: 6px;
+    color: rgba(255, 255, 255, 0.9);
+}
+.remove-item-btn {
+    cursor: pointer;
+    color: crimson;
+    margin-left: 6px;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+.remove-item-btn:hover {
+    color: rgb(255, 100, 100);
+}
+
+#total-cost {
+    color: rgb(255, 255, 255);
+    font-size: 1.5rem;
+}
+
+/* Кнопки */
+button#clear-canvas, button#add-to-cart-btn {
+    background: rgb(156, 151, 35);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(156, 151, 35, 0.7);
+    transition: 0.3s ease;
+    font-size: 1.1rem;
+    margin-top: 20px;
+}
+button#clear-canvas:hover, button#add-to-cart-btn:hover {
+    background: #fff;
+    color: rgb(225, 216, 22);
+    text-shadow: 0 0 8px rgba(225, 216, 22, 0.6);
+    box-shadow: 0 0 15px rgba(225, 216, 22, 0.9);
+}
+
+button#clear-canvas:disabled, button#add-to-cart-btn:disabled {
+    background: rgba(26, 26, 26, 0.5);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+button#clear-canvas:disabled:hover, button#add-to-cart-btn:disabled:hover {
+    background: rgba(0, 0, 0, 0.5);
+    color: #b7b7b7;
+    box-shadow: none;
+    text-shadow: #555555;
+    box-shadow: #000;
+}
+
+/* === Планшети / середні екрани === */
+@media (max-width: 992px) {
+    .builder-container {
+        flex-direction: column; /* Вертикальна розкладка */
+        padding: 20px;
+        gap: 15px;
+    }
+    .inventory-panel, .cost-panel {
+        width: 100%;
+        max-height: 300px;
+    }
+    .design-canvas-wrapper {
+        width: 100%;
+    }
+    #design-canvas {
+        height: 450px;
+    }
+}
+
+/* === Мобільні телефони === */
+@media (max-width: 576px) {
+    body {
+        font-size: 0.85rem;
+    }
+    .builder-container {
+        padding: 10px;
+        gap: 10px;
+    }
+    .inventory-panel, .cost-panel, .design-canvas-wrapper {
+        width: 100%;
+        padding: 10px;
+        border-radius: 12px;
+    }
+    #design-canvas {
+        height: 300px;
+    }
+    .draggable-item {
+        padding: 4px 6px;
+        gap: 5px;
+    }
+    .item-icon {
+        width: 30px;
+        height: 30px;
+    }
+    h2, h3 {
+        font-size: 1.1rem;
+    }
+    button#clear-canvas, button#add-to-cart-btn {
+        padding: 8px 15px;
+        font-size: 1rem;
+    }
+}

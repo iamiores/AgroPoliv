@@ -1,0 +1,391 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    color: #fff;
+    background: rgba(60, 58, 5, 0.85);
+    min-height: 200vh;
+    overflow-x: hidden;
+}
+
+.hero-image{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url("/static/media/backg.jpg") center/cover no-repeat;
+    transition: all 1s ease;
+    z-index: -2;
+    backdrop-filter: blur(5px);
+}
+
+.hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 1;
+}
+
+.hero-content {
+    z-index: 1;
+    margin-left: 200px;
+    margin-top: 150px;
+}
+
+.hero-content h2 p {
+    font-family: "Pacifico", cursive;
+}
+
+.hero-content h2 {
+    color: rgba(225, 216, 22);
+    font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 2.7rem;
+}
+
+.hero-content p {
+    opacity: 0;
+    animation-delay: 2s;
+    color: #fff;
+    font-family: 'Pacifico', sans-serif;
+    font-size: 2rem;
+    margin-left: 20px;
+}
+
+.white-wall {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(60, 58, 5, 0.95) 40%, transparent 60%);
+    width: 100%;
+    height: 200vh;
+    z-index: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.btn {
+    opacity: 0;
+    position: relative;
+    display: inline-block;
+    margin: 20px 10px 0 0;
+    padding: 10px 20px;
+    background: #9c9723;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 16px;
+    font-size: 1.2rem;
+    z-index: 1;
+    left: 20px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    box-shadow: #9c9723 0px 0px 8px;
+    animation-delay: 3s;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: white;
+    color: rgba(225, 216, 22);
+    text-shadow: rgba(225, 216, 22, 0.6) 0px 0px 6px;
+}
+
+
+.content {
+    position: relative;
+    z-index: 3;
+    padding: 300px 20px 100px 20px;
+}
+
+.content h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: rgba(225, 216, 22);
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.scroll-animate {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+.scroll-animate.active,
+.hero-content h2.active { 
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.781);
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    flex-direction: row;
+    column-gap: 40px;
+    margin-top: 80px;
+    align-items: center;
+    text-align: center;
+}
+
+.card {
+    border-radius: 20px;
+    padding: 30px 20px;
+    text-align: center;
+    width: 260px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px) scale(1.03);
+}
+
+.card span {
+    display: inline-block;
+    font-size: 64px;
+    color: rgb(225, 216, 22);
+    margin-bottom: 20px;
+    border: 4px solid rgba(255, 255, 255, 0.7);
+    padding: 25px 45px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.card:hover span {
+    color: #fff;
+    border-color: rgb(225, 216, 22);
+    transform: translateY(-2.5px) scale(1.1);
+}
+
+.card h3 {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    color: #ffffff;
+    font-family: 'Poppins', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-weight: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.card p {
+    color: rgba(255, 255, 255, 0.581);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+.btn-card {
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 10px 40px;
+    border-radius: 25px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: 0.3s;
+    margin-top: 40px;
+}
+
+.btn-card:hover {
+    background-color: #fff;
+    color: #d0c90a;
+}
+
+
+.contacts {
+    position: relative;
+    z-index: 20;
+    margin-top: 100px;
+    padding: 10px 0; 
+    background: rgba(180, 183, 19, 0.35);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contact-info {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 40px;
+    color: #fff;
+    padding: 0 20px;
+    max-width: 1100px;
+    width: 100%;
+}
+
+.contact-info .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.contact-info h3 {
+    font-size: 1.1rem;
+    margin: 0;
+    color: #fff;
+}
+
+.contact-info p {
+    font-size: 0.95rem;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.info-item.left{
+    align-items: flex-start;
+    text-align: left;
+}
+
+.info-item.center {
+    align-items: center;
+    text-align: center;
+    transform: translateX(50px);
+}
+
+.info-item.right {
+    align-items: flex-end;
+    text-align: right;
+    transform: translateX(40px);
+}
+
+/* Планшети і невеликі десктопи: до 992px */
+@media (max-width: 992px) {
+    .hero-content {
+        margin-left: 100px;
+        margin-top: 100px;
+    }
+
+    .hero-content h2 {
+        font-size: 2.2rem;
+    }
+
+    .hero-content p {
+        font-size: 1.6rem;
+        margin-left: 10px;
+    }
+
+    .buttons {
+        flex-direction: row;
+        column-gap: 30px;
+        row-gap: 20px;
+    }
+
+    .card {
+        width: 220px;
+        padding: 25px 15px;
+    }
+
+    .card span {
+        font-size: 50px;
+        padding: 20px 35px;
+    }
+
+    .btn, .btn-card {
+        font-size: 1rem;
+        padding: 8px 20px;
+    }
+
+    .contact-info {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 20px;
+    }
+
+    .info-item.center {
+        transform: translateX(30px);
+    }
+
+    .info-item.right {
+        transform: translateX(20px);
+    }
+}
+
+/* Мобільні: до 576px */
+@media (max-width: 576px) {
+    body {
+        font-size: 14px;
+    }
+
+    .hero-content {
+        margin-left: 20px;
+        margin-top: 80px;
+    }
+
+    .hero-content h2 {
+        font-size: 1.8rem;
+    }
+
+    .hero-content p {
+        font-size: 1.2rem;
+        margin-left: 0;
+    }
+
+    .buttons {
+        flex-direction: column;
+        row-gap: 30px;
+        column-gap: 0;
+        align-items: center;
+    }
+
+    .card {
+        width: 90%;
+        padding: 20px 15px;
+    }
+
+    .card span {
+        font-size: 40px;
+        padding: 15px 30px;
+    }
+
+    .btn, .btn-card {
+        font-size: 0.9rem;
+        padding: 8px 15px;
+    }
+
+    .contact-info {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 15px;
+    }
+
+    .info-item.left, .info-item.center, .info-item.right {
+        align-items: center;
+        transform: none;
+    }
+
+    .hero {
+        height: 80vh;
+    }
+
+    .white-wall {
+        background: linear-gradient(to bottom, rgba(60,58,5,0.95), transparent 80%);
+    }
+}

@@ -1,0 +1,564 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Ефект переливання кольорів фону */
+@keyframes gradientShift {
+    0% {
+        background: radial-gradient(ellipse at top, rgba(60, 58, 5, 0.92), rgba(24, 23, 2, 0.98));
+    }
+    25% {
+        background: radial-gradient(ellipse at right top, rgba(45, 43, 4, 0.92), rgba(30, 29, 3, 0.98));
+    }
+    50% {
+        background: radial-gradient(ellipse at center, rgba(35, 34, 4, 0.92), rgba(40, 38, 4, 0.98));
+    }
+    75% {
+        background: radial-gradient(ellipse at left top, rgba(50, 48, 5, 0.92), rgba(28, 27, 3, 0.98));
+    }
+    100% {
+        background: radial-gradient(ellipse at top, rgba(60, 58, 5, 0.92), rgba(24, 23, 2, 0.98));
+    }
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background: radial-gradient(ellipse at top, rgba(60, 58, 5, 0.92), rgba(24, 23, 2, 0.98));
+    color: #fdfdfd;
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.6;
+    z-index: 0;
+    animation: gradientShift 15s ease-in-out infinite;
+}
+
+/* Контейнер для ефектів */
+.effects-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Ефект переливання кольорів */
+.color-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        rgba(30, 58, 5, 0.3),    /* Темно-зелений */
+        rgba(60, 88, 12, 0.2),   /* Середньо-зелений */
+        rgba(90, 118, 25, 0.25), /* Світло-зелений */
+        rgba(120, 148, 35, 0.2), /* Жовтувато-зелений */
+        rgba(156, 151, 35, 0.3)  /* Золотий */
+    );
+    background-size: 400% 400%;
+    animation: colorFlow 12s ease-in-out infinite;
+    mix-blend-mode: overlay;
+}
+
+@keyframes colorFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Пульсуючий ефект */
+.pulse-effect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(
+        circle,
+        rgba(90, 118, 25, 0.15) 0%,   /* Середньо-зелений */
+        rgba(60, 88, 12, 0.1) 40%,    /* Темно-зелений */
+        transparent 70%
+    );
+    animation: pulse 10s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.2;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        opacity: 0.4;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+/* Ефект світлячків */
+.fireflies {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.firefly {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(
+        circle,
+        rgba(225, 216, 22, 0.9),  /* Яскравий золотий */
+        rgba(156, 151, 35, 0.7),  /* Золотий */
+        rgba(120, 148, 35, 0.5)   /* Світло-зелений */
+    );
+    border-radius: 50%;
+    animation: floatFirefly 12s ease-in-out infinite;
+    filter: blur(0.5px);
+    box-shadow: 
+        0 0 8px rgba(225, 216, 22, 0.6),
+        0 0 15px rgba(156, 151, 35, 0.4);
+}
+
+.firefly:nth-child(2n) {
+    width: 4px;
+    height: 4px;
+    background: radial-gradient(
+        circle,
+        rgba(120, 148, 35, 0.9),  /* Світло-зелений */
+        rgba(90, 118, 25, 0.6),   /* Середньо-зелений */
+        rgba(60, 88, 12, 0.4)     /* Темно-зелений */
+    );
+    animation-duration: 15s;
+    box-shadow: 
+        0 0 6px rgba(120, 148, 35, 0.5),
+        0 0 12px rgba(90, 118, 25, 0.3);
+}
+
+.firefly:nth-child(3n) {
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.9),
+        rgba(225, 216, 22, 0.7),
+        rgba(156, 151, 35, 0.5)
+    );
+    animation-duration: 8s;
+    box-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.4),
+        0 0 20px rgba(225, 216, 22, 0.3);
+}
+
+@keyframes floatFirefly {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.3;
+    }
+    25% {
+        transform: translate(20px, -30px) scale(1.2);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translate(-15px, -50px) scale(0.9);
+        opacity: 0.5;
+    }
+    75% {
+        transform: translate(25px, -20px) scale(1.1);
+        opacity: 0.7;
+    }
+}
+
+/* Хвилястий ефект на краях */
+.wave-edges {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at 0% 0%, rgba(60, 88, 12, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 0%, rgba(90, 118, 25, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 0% 100%, rgba(120, 148, 35, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 100%, rgba(156, 151, 35, 0.1) 0%, transparent 50%);
+    animation: waveMove 20s ease-in-out infinite;
+}
+
+@keyframes waveMove {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* Оновлені стилі для контенту з більш високим z-index */
+.content-wrapper {
+    position: relative;
+    z-index: 10;
+}
+
+/* Ефект для заголовка */
+h1 {
+    text-align: center;
+    margin-top: 100px;
+    font-size: 3rem;
+    letter-spacing: 2px;
+    color: rgb(225, 216, 22);
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-shadow: 0 0 12px rgba(225, 216, 22, 0.4);
+    position: relative;
+    z-index: 20;
+}
+
+@keyframes shine {
+    0%, 100% {
+        transform: rotate(45deg) translateX(-100%);
+    }
+    50% {
+        transform: rotate(45deg) translateX(100%);
+    }
+}
+
+/* Ефект мерехтіння для світлячків */
+@keyframes twinkle {
+    0%, 100% {
+        opacity: 0.3;
+        filter: blur(0.5px) brightness(1);
+    }
+    50% {
+        opacity: 0.9;
+        filter: blur(0.8px) brightness(1.5);
+    }
+}
+
+.firefly {
+    animation: floatFirefly 12s ease-in-out infinite, twinkle 3s ease-in-out infinite;
+}
+
+.firefly:nth-child(2n) {
+    animation: floatFirefly 15s ease-in-out infinite, twinkle 4s ease-in-out infinite;
+}
+
+.firefly:nth-child(3n) {
+    animation: floatFirefly 8s ease-in-out infinite, twinkle 2s ease-in-out infinite;
+}
+
+
+h1 {
+    text-align: center;
+    margin-top: 100px;
+    font-size: 3rem;
+    letter-spacing: 2px;
+    color: rgb(225, 216, 22);
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-shadow: 0 0 12px rgba(225, 216, 22, 0.4);
+}
+
+p {
+    text-align: center;
+    margin: 20px auto;
+    width: 70%;
+    color: rgba(242, 255, 199, 0.596);
+    font-size: 1.1rem;
+    font-weight: 300;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+
+form {
+    width: 60%;
+    margin: 50px auto;
+    background: rgba(90, 88, 12, 0.25);
+    border: 1px solid rgba(225, 216, 22, 0.2);
+    border-radius: 20px;
+    padding: 25px 35px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 14px rgba(225, 216, 22, 0.15);
+    transition: 0.3s ease;
+}
+
+form:hover {
+    background: rgba(90, 88, 12, 0.35);
+    box-shadow: 0 0 22px rgba(225, 216, 22, 0.25);
+}
+
+form label {
+    display: block;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+form input[type="text"],
+form textarea {
+    max-width: 400px;
+    max-height: 200px;
+    min-height: 50px;
+    min-width: 400px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    outline: none;
+    font-size: 1rem;
+    transition: border 0.3s ease, background 0.3s ease;
+}
+
+form input[type="text"]:focus,
+form textarea:focus {
+    border-color: rgb(225, 216, 22);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+form input[type="submit"] {
+    margin-top: -10px;
+    background: rgb(156, 151, 35);
+    color: #fff;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 14px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(156, 151, 35, 0.7);
+    transition: 0.3s ease;
+    font-size: 18.5px;
+}
+
+.button {
+    text-align: center;
+}
+
+form input[type="submit"]:hover {
+    background: #fff;
+    color: rgb(225, 216, 22);
+    text-shadow: 0 0 8px rgba(225, 216, 22, 0.6);
+}
+
+
+.article-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 40px;
+    padding: 60px 80px;
+    margin-bottom: 100px;
+}
+
+.article-list a {
+    text-decoration: none;
+}
+
+.article-list li {
+    background: rgba(70, 67, 10, 0.25);
+    border-radius: 20px;
+    border: 1px solid rgba(225, 216, 22, 0.2);
+    padding: 30px 25px;
+    color: #fff;
+    backdrop-filter: blur(6px);
+    transition: transform 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.article-list li::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(225, 216, 22, 0.12), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.article-list li:hover::before {
+    opacity: 1;
+}
+
+.article-list li:hover {
+    transform: translateY(-6px) scale(1.02);
+    background: rgba(156, 151, 35, 0.25);
+    box-shadow: 0 0 20px rgba(225, 216, 22, 0.2);
+}
+
+.article-list li h4 {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 1.4rem;
+    color: rgb(225, 216, 22);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.article-list li p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.article-list li .info {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.article-list li .info small {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    border-radius: 8px;
+}
+
+.contacts {
+    position: relative;
+    z-index: 20;
+    margin-top: 30px;
+    padding: 10px 0; 
+    background: rgba(180, 183, 19, 0.35);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contact-info {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 40px;
+    color: #fff;
+    padding: 0 20px;
+    max-width: 1100px;
+    width: 100%;
+}
+
+.contact-info .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.contact-info h3 {
+    font-size: 1.1rem;
+    margin: 0;
+    color: #fff;
+}
+
+.contact-info p {
+    font-size: 0.95rem;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.info-item.left{
+    align-items: flex-start;
+    text-align: left;
+}
+
+.info-item.center {
+    align-items: center;
+    text-align: center;
+    transform: translateX(50px);
+}
+
+.info-item.right {
+    align-items: flex-end;
+    text-align: right;
+    transform: translateX(40px);
+}
+
+@media (max-width: 576px) {
+    h1 {
+        font-size: 2rem;
+        margin-top: 60px;
+    }
+
+    p {
+        width: 90%;
+        font-size: 0.95rem;
+    }
+
+    form {
+        width: 90%;
+        padding: 20px;
+    }
+
+    form input[type="text"],
+    form textarea {
+        min-width: 100%;
+        max-width: 100%;
+    }
+
+    .article-list {
+        grid-template-columns: 1fr;
+        padding: 30px 20px;
+        gap: 25px;
+        margin-bottom: 60px;
+    }
+
+    .article-list li {
+        padding: 20px 18px;
+    }
+
+    .article-list li h4 {
+        font-size: 1.2rem;
+    }
+
+    form input[type="submit"] {
+        font-size: 16px;
+        padding: 8px 20px;
+    }
+}
+
+
+@media (max-width: 992px) {
+    h1 {
+        font-size: 2.4rem;
+        margin-top: 80px;
+    }
+
+    p {
+        width: 80%;
+    }
+
+    form {
+        width: 75%;
+    }
+
+    form input[type="text"],
+    form textarea {
+        min-width: 100%;
+        max-width: 100%;
+    }
+
+    .article-list {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        padding: 40px 40px;
+        gap: 30px;
+    }
+
+    .article-list li {
+        padding: 25px 22px;
+    }
+
+    .article-list li h4 {
+        font-size: 1.3rem;
+    }
+}

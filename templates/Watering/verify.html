@@ -1,0 +1,368 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Підтвердження email</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Весь наданий вами CSS вставлено сюди */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Ефект переливання кольорів фону */
+        @keyframes gradientShift {
+            0% {
+                background: radial-gradient(ellipse at top, rgba(60, 58, 5, 0.92), rgba(24, 23, 2, 0.98));
+            }
+            25% {
+                background: radial-gradient(ellipse at right top, rgba(45, 43, 4, 0.92), rgba(30, 29, 3, 0.98));
+            }
+            50% {
+                background: radial-gradient(ellipse at center, rgba(35, 34, 4, 0.92), rgba(40, 38, 4, 0.98));
+            }
+            75% {
+                background: radial-gradient(ellipse at left top, rgba(50, 48, 5, 0.92), rgba(28, 27, 3, 0.98));
+            }
+            100% {
+                background: radial-gradient(ellipse at top, rgba(60, 58, 5, 0.92), rgba(24, 23, 2, 0.98));
+            }
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            background: radial-gradient(ellipse at top, rgba(60, 58, 5, 0.92), rgba(24, 23, 2, 0.98));
+            color: #fdfdfd;
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+            z-index: 0;
+            animation: gradientShift 15s ease-in-out infinite;
+            display: flex; /* Додано для центрування контенту */
+            justify-content: center; /* Додано для центрування контенту */
+            align-items: center; /* Додано для центрування контенту */
+        }
+
+        /* Контейнер для ефектів */
+        .effects-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Ефект переливання кольорів */
+        .color-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                rgba(30, 58, 5, 0.3),     /* Темно-зелений */
+                rgba(60, 88, 12, 0.2),    /* Середньо-зелений */
+                rgba(90, 118, 25, 0.25),  /* Світло-зелений */
+                rgba(120, 148, 35, 0.2),  /* Жовтувато-зелений */
+                rgba(156, 151, 35, 0.3)   /* Золотий */
+            );
+            background-size: 400% 400%;
+            animation: colorFlow 12s ease-in-out infinite;
+            mix-blend-mode: overlay;
+        }
+
+        @keyframes colorFlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Пульсуючий ефект */
+        .pulse-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(
+                circle,
+                rgba(90, 118, 25, 0.15) 0%,   /* Середньо-зелений */
+                rgba(60, 88, 12, 0.1) 40%,    /* Темно-зелений */
+                transparent 70%
+            );
+            animation: pulse 10s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.2;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                opacity: 0.4;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+
+        /* Ефект світлячків */
+        .fireflies {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .firefly {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(
+                circle,
+                rgba(225, 216, 22, 0.9),   /* Яскравий золотий */
+                rgba(156, 151, 35, 0.7),   /* Золотий */
+                rgba(120, 148, 35, 0.5)    /* Світло-зелений */
+            );
+            border-radius: 50%;
+            filter: blur(0.5px);
+            box-shadow: 
+                0 0 8px rgba(225, 216, 22, 0.6),
+                0 0 15px rgba(156, 151, 35, 0.4);
+            animation: floatFirefly 12s ease-in-out infinite, twinkle 3s ease-in-out infinite; /* Об'єднано анімації */
+        }
+
+        .firefly:nth-child(2n) {
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(
+                circle,
+                rgba(120, 148, 35, 0.9),   /* Світло-зелений */
+                rgba(90, 118, 25, 0.6),    /* Середньо-зелений */
+                rgba(60, 88, 12, 0.4)      /* Темно-зелений */
+            );
+            animation: floatFirefly 15s ease-in-out infinite, twinkle 4s ease-in-out infinite;
+            box-shadow: 
+                0 0 6px rgba(120, 148, 35, 0.5),
+                0 0 12px rgba(90, 118, 25, 0.3);
+        }
+
+        .firefly:nth-child(3n) {
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(
+                circle,
+                rgba(255, 255, 255, 0.9),
+                rgba(225, 216, 22, 0.7),
+                rgba(156, 151, 35, 0.5)
+            );
+            animation: floatFirefly 8s ease-in-out infinite, twinkle 2s ease-in-out infinite;
+            box-shadow: 
+                0 0 10px rgba(255, 255, 255, 0.4),
+                0 0 20px rgba(225, 216, 22, 0.3);
+        }
+
+        @keyframes floatFirefly {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.3;
+            }
+            25% {
+                transform: translate(20px, -30px) scale(1.2);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translate(-15px, -50px) scale(0.9);
+                opacity: 0.5;
+            }
+            75% {
+                transform: translate(25px, -20px) scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        /* Ефект мерехтіння для світлячків */
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0.3;
+                filter: blur(0.5px) brightness(1);
+            }
+            50% {
+                opacity: 0.9;
+                filter: blur(0.8px) brightness(1.5);
+            }
+        }
+        
+        /* Хвилястий ефект на краях */
+        .wave-edges {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 0% 0%, rgba(60, 88, 12, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 0%, rgba(90, 118, 25, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 0% 100%, rgba(120, 148, 35, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 100%, rgba(156, 151, 35, 0.1) 0%, transparent 50%);
+            animation: waveMove 20s ease-in-out infinite;
+        }
+
+        @keyframes waveMove {
+            0%, 100% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        /* Оновлені стилі для контенту з більш високим z-index */
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* Стилі для заголовка H2 */
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 2.5rem; /* Зменшено для форми */
+            letter-spacing: 1.5px;
+            color: rgb(225, 216, 22); /* Золотистий колір */
+            text-shadow: 0 0 10px rgba(225, 216, 22, 0.5);
+            position: relative;
+            z-index: 20;
+            font-family: "Poppins", sans-serif; /* Використовуємо основний шрифт */
+        }
+        
+        /* Стилі для параграфа помилки */
+        p {
+            text-align: center;
+            margin: 10px auto;
+            width: 100%;
+            color: rgba(255, 100, 100, 0.9); /* Червоний колір для помилки */
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Стилі для форми (основний контейнер) */
+        form {
+            width: 100%;
+            max-width: 450px; /* Обмежимо ширину для кращого вигляду */
+            /* Margin змінено, оскільки ми використовуємо flexbox на body */
+            margin: 0; 
+            background: rgba(90, 88, 12, 0.25);
+            border: 1px solid rgba(225, 216, 22, 0.2);
+            border-radius: 20px;
+            padding: 30px 40px; /* Збільшено відступи */
+            backdrop-filter: blur(6px);
+            box-shadow: 0 0 14px rgba(225, 216, 22, 0.15);
+            transition: 0.3s ease;
+            text-align: center; /* Центруємо вміст форми */
+        }
+
+        form:hover {
+            background: rgba(90, 88, 12, 0.35);
+            box-shadow: 0 0 22px rgba(225, 216, 22, 0.25);
+        }
+
+        /* Стилі для поля вводу */
+        form input[type="text"] {
+            width: 100%;
+            max-width: 100%; /* Забезпечуємо повну ширину всередині форми */
+            height: 50px;
+            min-height: 50px;
+            min-width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            outline: none;
+            font-size: 1.2rem; /* Збільшено розмір шрифту */
+            text-align: center; /* Центруємо текст коду */
+            letter-spacing: 2px;
+            transition: border 0.3s ease, background 0.3s ease;
+        }
+
+        form input[type="text"]:focus {
+            border-color: rgb(225, 216, 22);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        /* Стилі для кнопки */
+        form button[type="submit"] {
+            border: 2px solid #fff;
+            background-color: #fff;
+            color: #9bbb0f;
+            border-radius: 16px;
+            font-family: "Poppins", sans-serif;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        form button[type="submit"]:hover {
+            background: transparent;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="effects-container">
+        <div class="color-overlay"></div>
+        <div class="pulse-effect"></div>
+        <div class="wave-edges"></div>
+        <div class="fireflies">
+            <div class="firefly" style="top: 20%; left: 10%;"></div>
+            <div class="firefly" style="top: 80%; left: 90%;"></div>
+            <div class="firefly" style="top: 50%; left: 45%;"></div>
+            <div class="firefly" style="top: 10%; left: 70%;"></div>
+            <div class="firefly" style="top: 65%; left: 30%;"></div>
+        </div>
+    </div>
+    
+    <div class="content-wrapper">
+        
+        <h2>Підтвердження електронної пошти</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="code" placeholder="Введіть код підтвердження" maxlength="6">
+            
+            <button type="submit">Підтвердити</button>
+
+            {% if error %}
+                <p style="color: red">{{ error }}</p>
+            {% endif %}
+        </form>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+.menu-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    font-size: 1.8rem;
+    background: rgba(156, 151, 35, 0.85);
+    border: none;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    box-shadow: 0 0 8px rgba(225, 216, 22, 0.4);
+}
+
+.menu-btn:hover {
+    background: white;
+    color: rgba(225, 216, 22);
+    box-shadow: 0 0 12px rgba(225, 216, 22, 0.8);
+}
+
+.side-nav {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 260px;
+    height: 100vh;
+    background: rgba(21, 21, 1, 0.95);
+    backdrop-filter: blur(6px);
+    box-shadow: 4px 0 10px rgba(0,0,0,0.6);
+    transition: left 0.4s ease;
+    z-index: 1002;
+    padding-top: 80px;
+}
+
+.side-nav.active {
+    left: 0;
+}
+
+.side-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.side-nav ul li {
+    margin: 20px 0;
+}
+
+.side-nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.2rem;
+    padding: 10px 25px;
+    display: block;
+    border-left: 4px solid transparent;
+    transition: 0.3s ease;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+.side-nav ul li a:hover {
+    background: rgba(225, 216, 22, 0.1);
+    border-left: 4px solid rgba(225, 216, 22, 0.8);
+    color: rgba(225, 216, 22);
+    text-shadow: 0 0 6px rgba(225, 216, 22, 0.6);
+}
+
+.now {
+    background: rgba(225, 216, 22, 0.1);
+    border-left: 4px solid rgba(225, 216, 22, 0.8);
+    color: rgba(225, 216, 22);
+    text-shadow: 0 0 6px rgba(225, 216, 22, 0.6);
+}
+
+.menu-title {
+    color: rgba(225, 216, 22);
+    font-size: 2rem;
+    margin-top: -65px;
+    margin-left: 15px;
+    font-family: Pacifico, cursive;
+    padding-bottom: 40px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2rem;
+    color: #fff;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.close-btn:hover {
+    color: rgba(225, 216, 22);
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 1000;
+}
+
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.icon {
+    vertical-align: middle;
+    margin-right: 10px;
+}

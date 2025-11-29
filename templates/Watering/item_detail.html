@@ -1,0 +1,155 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ item.name }}</title>
+    <link rel="stylesheet" href="{% static 'css/item_det.css' %}">
+</head>
+<body>
+
+    <a href="{% url 'catalog' %}" class="back-btn">← Назад</a>
+
+    <div class="item-container">
+        {% if item.image %}
+            <img src="/static/{{ item.image }}" alt="{{ item.name }}" class="item-image">
+        {% endif %}
+        <div class="details-wrapper">
+            <div class="top-content">
+                <h1>{{ item.name }}</h1>
+                <p class="description">{{ item.description }}</p>
+            </div>
+            <div class="bottom-content">
+                <p class="price">Ціна: <span id="price">{{ item.price }}</span> грн</p>
+                <div class="btn-row">
+                    <button class="btn buy-btn" onclick="openBuyModal()">Купити</button>
+                    <button class="btn-cart" onclick="openCartModal()">Додати в кошик</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="buyModal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeBuyModal()">&times;</span>
+            <h2>Підтвердження покупки</h2>
+            <p><strong>{{ item.name }}</strong></p>
+            <p>Ціна: <strong id="unitPrice">{{ item.price }}</strong> грн</p>
+
+            <label for="buyQty">Кількість:</label>
+            <input type="number" id="buyQty" min="1" value="1">
+
+            <label for="buyPromo">Промокод:</label>
+            <input type="text" id="buyPromo" placeholder="Введіть код">
+
+            <p>Разом: <strong id="buyTotal">{{ item.price }}</strong> грн</p>
+
+            <form action="{% url 'buy_item' item.id %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" id="buyQtyHidden" value="1">
+                <input type="hidden" name="promo_code" id="buyPromoHidden" value="">
+                <button type="submit" class="btn-confirm">Придбати</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="cartModal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeCartModal()">&times;</span>
+            <h2>Додати в кошик</h2>
+            <p><strong>{{ item.name }}</strong></p>
+            <p>Ціна: <strong id="cartUnitPrice">{{ item.price }}</strong> грн</p>
+
+            <label for="cartQty">Кількість:</label>
+            <input type="number" id="cartQty" min="1" value="1">
+
+            <p>Разом: <strong id="cartTotal">{{ item.price }}</strong> грн</p>
+
+            <form action="{% url 'add_to_cart' item.id %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" id="cartQtyHidden" value="1">
+                <button type="submit" class="btn-confirm">Додати в кошик</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const buyModal = document.getElementById("buyModal");
+        const buyQty = document.getElementById("buyQty");
+        const buyPromo = document.getElementById("buyPromo");
+        const buyTotal = document.getElementById("buyTotal");
+        const buyQtyHidden = document.getElementById("buyQtyHidden");
+        const buyPromoHidden = document.getElementById("buyPromoHidden");
+        const unitPrice = parseFloat('{{ item.price }}');
+
+        function openBuyModal() {
+            buyModal.style.display = 'flex';
+            calculateBuyTotal();
+        }
+
+        function closeBuyModal() {
+            buyModal.style.display = 'none';
+        }
+
+        function calculateBuyTotal() {
+            let quantity = Math.max(parseInt(buyQty.value) || 1, 1);
+            buyQty.value = quantity;
+            buyQtyHidden.value = quantity;
+
+            const code = buyPromo.value.trim();
+            buyPromoHidden.value = code;
+
+            if (code === "") {
+                buyTotal.innerText = (unitPrice * quantity).toFixed(2);
+                return;
+            }
+
+            // AJAX-запит для перевірки промокоду
+            fetch(`{% url 'validate_promo' %}?code=${code}`)
+                .then(res => res.json())
+                .then(data => {
+                    let discount = 0;
+                    if (data.valid) discount = data.discount / 100;
+                    const total = unitPrice * quantity * (1 - discount);
+                    buyTotal.innerText = total.toFixed(2);
+                })
+                .catch(() => {
+                    // Якщо помилка, ціна без знижки
+                    buyTotal.innerText = (unitPrice * quantity).toFixed(2);
+                });
+        }
+
+        buyQty.addEventListener("input", calculateBuyTotal);
+        buyPromo.addEventListener("input", calculateBuyTotal);
+
+
+        // --- Модальне вікно кошика ---
+        const cartModal = document.getElementById("cartModal");
+        const cartQty = document.getElementById("cartQty");
+        const cartTotal = document.getElementById("cartTotal");
+        const cartQtyHidden = document.getElementById("cartQtyHidden");
+
+        function openCartModal() { 
+            cartModal.style.display = 'flex';
+            calculateCartTotal(); 
+        }
+        function closeCartModal() { 
+            cartModal.style.display = 'none';
+        }
+
+        function calculateCartTotal() {
+            let quantity = parseInt(cartQty.value) || 1;
+            quantity = Math.max(quantity, 1);
+            cartQty.value = quantity;
+
+            let total = unitPrice * quantity;
+            cartTotal.innerText = total.toFixed(2);
+
+            cartQtyHidden.value = quantity;
+        }
+
+        cartQty.addEventListener("input", calculateCartTotal);
+
+    </script>
+</body>
+</html>

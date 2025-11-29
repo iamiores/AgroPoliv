@@ -1,0 +1,499 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+@keyframes gradientShift {
+    0% {
+        background: radial-gradient(ellipse at top, rgba(60, 58, 5, 0.92), rgba(24, 23, 2, 0.98));
+    }
+    25% {
+        background: radial-gradient(ellipse at right top, rgba(45, 43, 4, 0.92), rgba(30, 29, 3, 0.98));
+    }
+    50% {
+        background: radial-gradient(ellipse at center, rgba(35, 34, 4, 0.92), rgba(40, 38, 4, 0.98));
+    }
+    75% {
+        background: radial-gradient(ellipse at left top, rgba(50, 48, 5, 0.92), rgba(28, 27, 3, 0.98));
+    }
+    100% {
+        background: radial-gradient(ellipse at top, rgba(60, 58, 5, 0.92), rgba(24, 23, 2, 0.98));
+    }
+}
+
+.back-btn {
+    display: inline-block;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    text-decoration: none;
+    color: rgb(225, 216, 22);
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 8px 15px;
+    border: 1px solid rgb(225, 216, 22);
+    border-radius: 18px;
+    background: rgba(60, 58, 5, 0.7);
+    backdrop-filter: blur(4px);
+    transition: 0.3s ease;
+    z-index: 20;
+}
+
+
+.back-btn:hover {
+    background: rgb(225, 216, 22);
+    color: #000;
+    box-shadow: 0 0 10px rgba(225, 216, 22, 0.7);
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background: #1c1b12;
+    color: #fdfdfd;
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.6;
+    z-index: 0;
+    animation: gradientShift 15s ease-in-out infinite;
+}
+
+/* Контейнер для ефектів */
+.effects-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Ефект переливання кольорів */
+.color-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        rgba(30, 58, 5, 0.3),    /* Темно-зелений */
+        rgba(60, 88, 12, 0.2),   /* Середньо-зелений */
+        rgba(90, 118, 25, 0.25), /* Світло-зелений */
+        rgba(120, 148, 35, 0.2), /* Жовтувато-зелений */
+        rgba(156, 151, 35, 0.3)  /* Золотий */
+    );
+    background-size: 400% 400%;
+    animation: colorFlow 12s ease-in-out infinite;
+    mix-blend-mode: overlay;
+}
+
+@keyframes colorFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Пульсуючий ефект */
+.pulse-effect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(
+        circle,
+        rgba(90, 118, 25, 0.15) 0%,   /* Середньо-зелений */
+        rgba(60, 88, 12, 0.1) 40%,    /* Темно-зелений */
+        transparent 70%
+    );
+    animation: pulse 10s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.2;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        opacity: 0.4;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+/* Ефект світлячків */
+.fireflies {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.firefly {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(
+        circle,
+        rgba(225, 216, 22, 0.9),  /* Яскравий золотий */
+        rgba(156, 151, 35, 0.7),  /* Золотий */
+        rgba(120, 148, 35, 0.5)   /* Світло-зелений */
+    );
+    border-radius: 50%;
+    animation: floatFirefly 12s ease-in-out infinite;
+    filter: blur(0.5px);
+    box-shadow: 
+        0 0 8px rgba(225, 216, 22, 0.6),
+        0 0 15px rgba(156, 151, 35, 0.4);
+}
+
+.firefly:nth-child(2n) {
+    width: 4px;
+    height: 4px;
+    background: radial-gradient(
+        circle,
+        rgba(120, 148, 35, 0.9),  /* Світло-зелений */
+        rgba(90, 118, 25, 0.6),   /* Середньо-зелений */
+        rgba(60, 88, 12, 0.4)     /* Темно-зелений */
+    );
+    animation-duration: 15s;
+    box-shadow: 
+        0 0 6px rgba(120, 148, 35, 0.5),
+        0 0 12px rgba(90, 118, 25, 0.3);
+}
+
+.firefly:nth-child(3n) {
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.9),
+        rgba(225, 216, 22, 0.7),
+        rgba(156, 151, 35, 0.5)
+    );
+    animation-duration: 8s;
+    box-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.4),
+        0 0 20px rgba(225, 216, 22, 0.3);
+}
+
+@keyframes floatFirefly {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.3;
+    }
+    25% {
+        transform: translate(20px, -30px) scale(1.2);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translate(-15px, -50px) scale(0.9);
+        opacity: 0.5;
+    }
+    75% {
+        transform: translate(25px, -20px) scale(1.1);
+        opacity: 0.7;
+    }
+}
+
+/* Хвилястий ефект на краях */
+.wave-edges {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at 0% 0%, rgba(60, 88, 12, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 0%, rgba(90, 118, 25, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 0% 100%, rgba(120, 148, 35, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 100%, rgba(156, 151, 35, 0.1) 0%, transparent 50%);
+    animation: waveMove 20s ease-in-out infinite;
+}
+
+@keyframes waveMove {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.content-wrapper {
+    position: relative;
+    z-index: 10;
+}
+
+a {
+    color: #f0d814;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #fff;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid rgba(225, 216, 22, 0.4);
+    margin: 30px 0;
+}
+
+article {
+    max-width: 900px;
+    margin: 40px auto;
+}
+
+article h1 {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    color: #e1d816;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+article small {
+    display: block;
+    margin-bottom: 15px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+article .content p {
+    margin-bottom: 20px;
+    color: rgba(242, 255, 199, 0.9);
+    font-size: 1.05rem;
+}
+
+section#add-comment {
+    max-width: 900px;
+    margin: 40px auto;
+}
+
+section#add-comment h2 {
+    color: #e1d816;
+    margin-bottom: 15px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+form textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 1rem;
+    resize: vertical;
+}
+
+form input[type="submit"] {
+    background: rgb(156, 151, 35);
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 14px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(156, 151, 35, 0.7);
+    transition: 0.3s ease;
+    font-size: 17px;
+}
+
+.button {
+    text-align: left;
+}
+
+form input[type="submit"]:hover {
+    background: #fff;
+    color: rgb(225, 216, 22);
+    text-shadow: 0 0 8px rgba(225, 216, 22, 0.6);
+}
+
+#comments {
+    max-width: 900px;
+    margin: 40px auto;
+}
+
+#comments h2 {
+    color: #e1d816;
+    margin-bottom: 15px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+.comment {
+    margin-bottom: 15px;
+    padding-left: 0;
+    border-radius: 20px;
+}
+
+.comment strong {
+    color: #f0d814;
+    font-size: 1.1rem;
+}
+
+.comment span {
+    font-size: 0.75rem;
+    color: #dcffad99;
+    margin-left: 10px;
+}
+
+.comment p {
+    margin: 5px 0 0 0;
+    color: rgba(242, 255, 199, 0.9);
+}
+
+.reply {
+    margin-left: 40px;
+    border-left: 2px solid #e1d816;
+    padding-left: 15px;
+    border-radius: 0px 15px 15px 20px;
+}
+
+.reply strong {
+    color: #f0d814;
+}
+
+.reply span {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-left: 10px;
+}
+
+.reply p {
+    margin: 5px 0 0 0;
+    color: rgba(242, 255, 199, 0.9);
+}
+.comment, .reply {
+    background: rgba(102, 108, 11, 0.5);
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+
+.reply-form {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.reply-form textarea {
+    width: 100%;
+    min-height: 50px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    padding: 8px;
+    max-width: 840px;
+}
+
+.reply-form textarea:focus {
+    border: 1px solid rgb(156, 151, 35);
+}
+
+
+.replybtn {
+    background-color: transparent;
+    border: none;
+    margin-bottom: 10px;
+    color: #e7ff8f88;
+    font-size: 17px;
+    transition: 0.2 ease;
+}
+
+.replybtn:hover {
+    color: #ffffff;
+}
+
+@media (max-width: 576px) {
+    .back-btn {
+        top: 10px;
+        left: 10px;
+        font-size: 0.9rem;
+        padding: 6px 12px;
+    }
+
+    article {
+        margin: 20px auto;
+        padding: 0 10px;
+    }
+
+    article h1 {
+        font-size: 1.6rem;
+    }
+
+    article .content p {
+        font-size: 0.95rem;
+    }
+
+    section#add-comment,
+    #comments {
+        margin: 25px auto;
+        padding: 0 10px;
+    }
+
+    form textarea {
+        min-height: 50px;
+        font-size: 0.9rem;
+    }
+
+    form input[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 15px;
+    }
+
+    .comment,
+    .reply {
+        padding: 12px 15px;
+    }
+
+    .reply {
+        margin-left: 20px;
+    }
+
+    .replybtn {
+        font-size: 15px;
+    }
+}
+
+
+@media (max-width: 992px) {
+    article {
+        max-width: 750px;
+        margin: 30px auto;
+        padding: 0 20px;
+    }
+
+    article h1 {
+        font-size: 2rem;
+    }
+
+    article .content p {
+        font-size: 1rem;
+    }
+
+    section#add-comment,
+    #comments {
+        max-width: 750px;
+        padding: 0 20px;
+    }
+
+    .reply {
+        margin-left: 30px;
+    }
+
+    form input[type="submit"] {
+        font-size: 16px;
+        padding: 10px 14px;
+    }
+}

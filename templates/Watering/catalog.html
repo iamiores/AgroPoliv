@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог</title>
+    <link rel="stylesheet" href="{% static 'css/catalog.css' %}">
+    <link rel="stylesheet" href="{% static 'css/nav.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+    <button class="menu-btn" id="menuBtn">
+        ☰
+    </button>
+    
+    <nav class="side-nav" id="sideNav">
+        <h3 class="menu-title">АгроПолив</h3>
+        <button class="close-btn" id="closeBtn">&times;</button>
+        <ul>
+        <li><a href="{% url 'home' %}"><span class="icon material-symbols-outlined">home</span>  Головна</a></li>
+        <li><a href="{% url 'catalog' %}" class="now"><span class="icon material-symbols-outlined">local_mall</span>  Каталог</a></li>
+        <li><a href="{% url 'articles' %}"><span class="icon material-symbols-outlined">article</span>  Статті</a></li>
+        <li><a href="{% url 'services' %}"><span class="icon material-symbols-outlined">home_repair_service</span>  Послуги</a></li>
+        {% if request.user.is_authenticated %}
+            <li><a href="{% url 'interactive_board' %}"><span class="icon material-symbols-outlined">format_paint</span>  Інтерактив дошка</a></li>
+            <li><a href="{% url 'cart' %}"><span class="icon material-symbols-outlined">garden_cart</span>  Кошик</a></li>
+            <li><a href="{% url 'logout' %}"><span class="icon material-symbols-outlined">logout</span>  Вийти</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}"><span class="icon material-symbols-outlined">logout</span>  Вхід</a></li>
+        {% endif %}
+        </ul>
+    </nav>
+    <div class="overlay" id="overlay"></div>
+
+    <h1>Каталог</h1>
+
+    <form method="get" action="" class="filter-form">
+        
+        <div class="search-bar-container">
+            <input type="text" name="search" value="{{ request.GET.search }}" placeholder="Пошук товару..." class="search-input">
+        </div>
+
+        <div class="other-filters-container">
+            <select name="category">
+                <option value="">Всі категорії</option>
+                {% for code, name in items.model.CATEGORY_CHOICES %}
+                    <option value="{{ code }}" {% if request.GET.category == code %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="type">
+                <option value="">Всі типи</option>
+                <option value="Item" {% if request.GET.type == "Item" %}selected{% endif %}>Окремий предмет</option>
+                <option value="Kit" {% if request.GET.type == "Kit" %}selected{% endif %}>Готовий сет</option>
+            </select>
+
+            <input type="number" name="price_min" value="{{ request.GET.price_min }}" placeholder="Мін. ціна" min="0">
+            <input type="number" name="price_max" value="{{ request.GET.price_max }}" placeholder="Макс. ціна" min="0">
+        </div>
+
+        <button type="submit"><i class="fas fa-filter"></i> Фільтрувати</button>
+    </form>
+
+    <div class="catalog-container">
+        {% for item in items %}
+            <div class="catalog-card">
+                <a href="{% url 'item_detail' item.id %}">
+                    {% if item.image %}
+                        <img src="/static/{{ item.image }}" alt="{{ item.name }}" class="catalog-image">
+                    {% else %}
+                        <div class="no-image">Немає зображення</div>
+                    {% endif %}
+
+                    <h3>{{ item.name }}</h3>
+                    <p class="description">{{ item.description|truncatewords:15 }}</p>
+                    <p class="category">Категорія: {{ item.get_category_display }}</p>
+                    {% if item.in_stock %}
+                        <p class="stock in-stock">В наявності</p>
+                    {% else %}
+                        <p class="stock out-of-stock">Немає в наявності</p>
+                    {% endif %}
+                    <p class="price">{{ item.price }} грн</p>
+                </a>
+            </div>
+        {% empty %}
+            <p class="no-results-message">Немає товарів за вашим запитом. Спробуйте змінити критерії.</p>
+        {% endfor %}
+
+        {% for kit in kits %}
+            <div class="catalog-card">
+                <a href="{% url 'item_detail' kit.id %}">
+                    {% if kit.image %}
+                        <img src="{{ kit.image }}" alt="{{ kit.name }}" class="catalog-image">
+                    {% else %}
+                        <div class="no-image">Немає зображення</div>
+                    {% endif %}
+
+                    <h3>{{ kit.name }}</h3>
+                    <p class="description">{{ kit.description|truncatewords:15 }}</p>
+                    <p class="category">Категорія: Сет</p>
+                    <p class="price">{{ kit.price }} грн</p>
+                </a>
+            </div>
+        {% empty %}
+            <p class="no-results-message">Немає готових сетів за вашим запитом.</p>
+        {% endfor %}
+        
+    </div>
+
+    <script>
+        const menuBtn = document.getElementById("menuBtn");
+        const sideNav = document.getElementById("sideNav");
+        const closeBtn = document.getElementById("closeBtn");
+        const overlay = document.getElementById("overlay");
+
+        menuBtn.addEventListener("click", () => {
+        sideNav.classList.add("active");
+        overlay.classList.add("active");
+        });
+
+        closeBtn.addEventListener("click", () => {
+        sideNav.classList.remove("active");
+        overlay.classList.remove("active");
+        });
+
+        overlay.addEventListener("click", () => {
+        sideNav.classList.remove("active");
+        overlay.classList.remove("active");
+        });
+    </script>
+</body>
+</html>

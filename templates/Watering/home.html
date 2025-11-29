@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Головна Сторінка</title>
+    <link rel="stylesheet" href="{% static '/css/home.css' %}">
+    <link rel="stylesheet" href="{% static '/css/nav.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+    <button class="menu-btn" id="menuBtn">
+        ☰
+    </button>
+    
+    <nav class="side-nav" id="sideNav">
+        <h3 class="menu-title">АгроПолив</h3>
+        <button class="close-btn" id="closeBtn">&times;</button>
+        <ul>
+        <li><a href="{% url 'home' %}" class="now"><span class="icon material-symbols-outlined">home</span>  Головна</a></li>
+        <li><a href="{% url 'catalog' %}"><span class="icon material-symbols-outlined">local_mall</span>  Каталог</a></li>
+        <li><a href="{% url 'articles' %}"><span class="icon material-symbols-outlined">article</span>  Статті</a></li>
+        <li><a href="{% url 'services' %}"><span class="icon material-symbols-outlined">home_repair_service</span>  Послуги</a></li>
+        {% if request.user.is_authenticated %}
+            <li><a href="{% url 'interactive_board' %}"><span class="icon material-symbols-outlined">format_paint</span>  Інтерактив дошка</a></li>
+            <li><a href="{% url 'cart' %}"><span class="icon material-symbols-outlined">garden_cart</span>  Кошик</a></li>
+            <li><a href="{% url 'logout' %}"><span class="icon material-symbols-outlined">logout</span>  Вийти</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}"><span class="icon material-symbols-outlined">logout</span>  Вхід</a></li>
+        {% endif %}
+        </ul>
+    </nav>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="hero-image" id="image-bg"></div>
+
+    <section class="intro" id="hero">
+        <div class="white-wall"></div>
+        <div class="hero-content">
+            <h2 class="scroll-animate">Зробіть ваші поля сучасними.</h2>
+            <p class="scroll-animate" >Автоматизований полив — це економія, <br> ефективність та стабільний врожай, який забезпечує <br> прибуток і спокій у будь-яку пору року.</p>
+            <br>
+            {% if not request.user.is_authenticated %}
+                <a href="{% url 'login' %}" class="btn scroll-animate">Почати роботу</a>
+            {% else %}
+                <a href="{% url 'cart' %}" class="btn scroll-animate">Кошик</a>
+            {% endif %}
+            <a href="{% url 'catalog' %}" class="btn scroll-animate">Каталог</a>
+        </div>
+    </section>
+
+    <section class="content">
+        <h1 class="scroll-animate">АгроПолив</h1>
+        <p class="subtitle scroll-animate">
+            Нам довіряють вже 10 років. <br>
+            Ми створюємо рішення для розумного зрошення, що поєднують технології, природу та вашу працю. <br>
+            Ефективність, стабільність і комфорт у кожній краплі.
+        </p>
+        <div class="buttons">
+            <div class="card scroll-animate">
+                <span class="pic material-symbols-outlined scroll-animate">article</span>
+                <h3 class="scroll-animate">Статті</h3>
+                <p class=" scroll-animate">Корисні поради з поливу від досвідчених експертів.</p>
+                <a href="{% url 'articles' %}" class="btn-card scroll-animate">Перейти</a>
+            </div>
+            
+            <div class="card scroll-animate">
+                <span class="pic material-symbols-outlined">format_paint</span>
+                <h3 class="scroll-animate">Інтерактивна дошка</h3>
+                <p class=" scroll-animate">Побудуй свій простір - зрозумій, що тобі треба.</p>
+                <a href="{% url 'interactive_board' %}" class="btn-card scroll-animate">Перейти</a>
+            </div>
+
+            <div class="card scroll-animate">
+                <span class="pic material-symbols-outlined scroll-animate">home_repair_service</span>
+                <h3 class="scroll-animate">Послуги</h3>
+                <p class=" scroll-animate">Дізнайся, що ми пропонуємо та зеконом час.</p>
+                <a href="{% url 'services' %}" class="btn-card scroll-animate">Перейти</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="contacts">
+        <div class="contact-info scroll-animate">
+            <h2 class="info-item left">АгроПолив</h2>
+            <div class="info-item scroll-animate center ">
+                <h2>Контакти</h2>
+                <p><strong>+380 97 123 45 67</strong></p>
+                <p><strong>info@agropoliv.ua</strong></p>
+                <p><strong>м. Миколаїв, вул. Сонячна 7</strong></p>
+            </div>
+            <div class="info-item scroll-animate right">
+                <p>Дякуємо за довіру!</p>
+                <p>© 2025 АгроПолив. Всі права захищені.</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const hero = document.getElementById("image-bg");
+        const whiteWall = document.querySelector(".white-wall");
+        const heroContent = document.querySelector(".hero-content");
+        window.addEventListener("scroll", function() {
+            const scrollY = window.scrollY;
+            const windowHeight = window.innerHeight;
+
+            const blur = Math.min(scrollY / 30, 12);
+            const opacity1 = Math.max(1 - scrollY / (windowHeight * 0.8), 0.6);
+            const opacity2 = Math.max(1 - scrollY / (windowHeight * 0.5), 0);
+
+            hero.style.filter = `blur(${blur}px)`;
+            hero.style.opacity = opacity1;
+
+            whiteWall.style.opacity = opacity2;
+            heroContent.style.opacity = opacity2;
+        });
+
+        const observerOptions = { threshold: 0.3 };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const section = entry.target;
+
+                if (entry.isIntersecting) {
+                    const all = section.querySelectorAll(".scroll-animate");
+                    const group = Array.from(all);
+                    const cardsAndButtons = group.filter(el =>
+                        el.classList.contains("card") ||
+                        el.classList.contains("btn") ||
+                        el.classList.contains("btn-card")
+                    );
+                    const others = group.filter(el =>
+                        !el.classList.contains("card") &&
+                        !el.classList.contains("btn") &&
+                        !el.classList.contains("btn-card")
+                    );
+
+                    group.forEach(el => {
+                        el.classList.remove("active");
+                        void el.offsetWidth;
+                    });
+
+                    others.forEach((el, i) => {
+                        setTimeout(() => el.classList.add("active"), i * 200);
+                    });
+
+                    setTimeout(() => {
+                        cardsAndButtons.forEach(el => el.classList.add("active"));
+                    }, others.length * 200);
+                } 
+                else {
+                    section.querySelectorAll(".scroll-animate").forEach(el => {
+                        el.classList.remove("active");
+                    });
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll("section").forEach(section => {
+            observer.observe(section);
+        });
+
+        window.onbeforeunload = function () {
+            window.scrollTo(0, 0);
+        };
+
+        const menuBtn = document.getElementById("menuBtn");
+        const sideNav = document.getElementById("sideNav");
+        const closeBtn = document.getElementById("closeBtn");
+        const overlay = document.getElementById("overlay");
+
+        menuBtn.addEventListener("click", () => {
+        sideNav.classList.add("active");
+        overlay.classList.add("active");
+        });
+
+        closeBtn.addEventListener("click", () => {
+        sideNav.classList.remove("active");
+        overlay.classList.remove("active");
+        });
+
+        overlay.addEventListener("click", () => {
+        sideNav.classList.remove("active");
+        overlay.classList.remove("active");
+        });
+
+    </script>
+</body>
+</html>

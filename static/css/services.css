@@ -1,0 +1,362 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Фоновий градієнт та ефекти */
+body {
+    font-family: "Poppins", sans-serif;
+    color: #fff;
+    background: radial-gradient(ellipse at top, rgba(60, 58, 5, 0.92), rgba(24, 23, 2, 0.98));
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.6;
+    padding: 50px 20px;
+    z-index: 0;
+}
+
+
+h1.bum {
+    font-size: 3rem;
+    color: rgb(225, 216, 22);
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-shadow: 0 0 12px rgba(225, 216, 22, 0.4);
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+
+h2.section-name {
+    font-size: 2rem;
+    color: rgb(225, 216, 22);
+    margin-top: 60px;
+    margin-bottom: 15px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-align: center;
+}
+
+p {
+    font-size: 1.1rem;
+    color: rgba(243, 255, 183, 0.756);
+    margin-bottom: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+}
+
+
+/* Секції послуг */
+.services-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    margin-bottom: 60px;
+}
+
+/* Картки сервісів */
+.service-card {
+    background: rgba(70, 67, 10, 0.25);
+    border: 1px solid rgba(225, 216, 22, 0.2);
+    border-radius: 20px;
+    padding: 25px 30px;
+    width: 320px;
+    backdrop-filter: blur(6px);
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    background: rgba(156, 151, 35, 0.25);
+    box-shadow: 0 0 20px rgba(225, 216, 22, 0.2);
+}
+
+.service-card h3 {
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 10px;
+    font-family: 'Poppins', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+.service-card p {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+.order-btn {
+    background: rgb(156, 151, 35);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    transition: 0.3s ease;
+}
+
+.order-btn:hover {
+    background: #fff;
+    color: rgb(225, 216, 22);
+    text-shadow: 0 0 8px rgba(225, 216, 22, 0.6);
+}
+
+/* Модальне вікно */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 50;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    backdrop-filter: blur(5px);
+    background-color: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+
+}
+
+.modal-content {
+    background: rgba(90, 88, 12, 0.25);
+    border: 1px solid rgba(225, 216, 22, 0.2);
+    border-radius: 20px;
+    padding: 25px 35px;
+    width: 90%;
+    max-width: 500px;
+    color: #fff;
+    text-align: center;
+    backdrop-filter: blur(6px);
+    position: relative;
+}
+
+
+
+.modal-content .close {
+    color: rgb(225, 216, 22);
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 30px;
+    font-weight: bold;
+    transition: 0.2s ease;
+}
+
+.modal-content .close:hover,
+.modal-content .close:focus {
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+
+.modal label {
+    font-family: 'Courier New', Courier, monospace;
+    color:rgba(243, 255, 183, 0.756);
+}
+
+.service-name {
+    font-weight: bold;
+    color: rgb(255, 255, 255);
+    margin-bottom: 20px;
+    margin-top: -15px;
+    font-size: 1.3rem;
+}
+
+/* Форма замовлення */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+form input[type="text"],
+form input[type="tel"],
+form textarea {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    outline: none;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+form input[type="text"]:focus,
+form input[type="tel"]:focus,
+form textarea:focus {
+    border-color: rgb(225, 216, 22);
+    background: rgba(255,255,255,0.12);
+}
+
+form button[type="submit"] {
+    margin-top: 10px;
+    background: rgb(156, 151, 35);
+    color: #fff;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 14px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+form button[type="submit"]:hover {
+    background: #fff;
+    color: rgb(225, 216, 22);
+    text-shadow: 0 0 8px rgba(225, 216, 22, 0.6);
+}
+
+/* Контент wrapper для центрованих секцій */
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    width: 100%;
+}
+
+ul.guarantee-items {
+    text-align: left;
+    list-style-type:decimal;
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 20px auto;
+    gap: 10px;
+    margin-left: 450px;
+}
+
+ul.guarantee-items li {
+    margin-bottom: 5px;
+    color:#ffffff;
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+}
+
+.services-cards {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 40px;
+    margin-bottom: 60px;
+    justify-content: flex-start;
+}
+    
+.service-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    align-items: center;  
+    
+    min-width: 300px;
+    max-width: 300px;
+    min-height: 450px;
+    max-height: 450px;
+    
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    text-align: center; 
+}
+
+button {
+    font-size: 16px;
+}
+
+/* Адаптив для планшетів і маленьких десктопів */
+@media (max-width: 992px) {
+    body {
+        padding: 40px 15px;
+    }
+
+    h1.bum {
+        font-size: 2.5rem;
+    }
+
+    h2.section-name {
+        font-size: 1.8rem;
+        margin-top: 50px; /* збільшена відстань зверху */
+        margin-bottom: 25px;
+    }
+
+    p {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+
+    .services-cards {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 40px; /* збільшена відстань між рядами */
+    }
+
+    .service-card {
+        min-width: 250px;
+        max-width: 250px;
+        min-height: 500px;
+        max-height: 500px;
+        padding: 15px;
+    }
+
+    ul.guarantee-items {
+        margin: 0 auto; /* по центру */
+        padding: 15px;
+        text-align: center; /* центрування тексту */
+        margin-left: 200px;
+    }
+}
+
+/* Адаптив для мобільних пристроїв */
+@media (max-width: 576px) {
+    h1.bum {
+        font-size: 2rem;
+    }
+
+    h2.section-name {
+        font-size: 1.5rem;
+        margin-top: 40px; /* більша відстань зверху */
+        margin-bottom: 20px;
+    }
+
+    p {
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+    }
+
+    .services-cards {
+        flex-direction: column;
+        gap: 40px; /* більша відстань між картками */
+        align-items: center;
+    }
+
+    .service-card {
+        min-width: 90%;
+        max-width: 90%;
+        min-height: auto;
+        padding: 15px;
+    }
+
+    form input[type="text"],
+    form input[type="tel"],
+    form textarea {
+        max-width: 100%;
+    }
+
+    ul.guarantee-items {
+        margin: 0 auto; /* по центру */
+        padding: 10px;
+        width: 90%;
+        text-align: center; /* центрування тексту */
+        margin-left: 50px;
+    }
+}

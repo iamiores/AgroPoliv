@@ -49,6 +49,7 @@ class Kit(models.Model):
 class KitItem(models.Model):
     kit = models.ForeignKey(Kit, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1, verbose_name="Кількість в наборі")
 
     def __str__(self):
         return f"{self.item.name} ({self.kit.name})"

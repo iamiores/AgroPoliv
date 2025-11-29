@@ -18,11 +18,11 @@
     <h2>Склад набору</h2>
 
     <ul>
-        {% for item in kit_items %}
+        {% for kit_item in kit_items %} 
             <li>
-                <a href="{% url 'item_detail' item.id %}">
-                    {{ item.name }} — {{ item.quantity }} шт.<br>
-                    <small>{{ item.description }}</small>
+                <a href="{% url 'item_detail' kit_item.item.id %}">
+                    {{ kit_item.item.name }} — {{ kit_item.quantity }} шт.<br>
+                    <small>{{ kit_item.item.description }}</small>
                 </a>
             </li>
         {% empty %}
@@ -42,15 +42,20 @@
             <span class="close" onclick="closePurchaseModal()">&times;</span>
             <h2 id="modalTitle">Підтвердження дії</h2> 
             <p><strong>{{ kit.name }}</strong></p>
-            <p>Ціна: <strong id="unitPriceDisplay">{{ kit.price }}</strong> грн</p>
+            <p id="unitPriceContainer">Ціна: <strong id="unitPriceDisplay">{{ kit.price }}</strong> грн</p>
 
-            <label for="actionQty">Кількість:</label>
+            <label for="actionQty">Кількість наборів:</label>
             <input type="number" id="actionQty" min="1" value="1">
 
-            <label for="actionPromo">Промокод:</label>
-            <input type="text" id="actionPromo" placeholder="Введіть код">
+            <div id="promoContainer">
+                <label for="actionPromo">Промокод (для покупки):</label>
+                <input type="text" id="actionPromo" placeholder="Введіть код">
+            </div>
 
-            <p>Разом: <strong id="actionTotal">{{ kit.price }}</strong> грн</p>
+            <p id="totalPriceContainer">
+                Всього: 
+                <strong id="actionTotal">{{ kit.price }}</strong> грн
+            </p>
 
             <form id="purchaseForm" method="POST">
                 {% csrf_token %}
@@ -69,6 +74,8 @@
         const modalTitle = document.getElementById("modalTitle");
         const btnConfirmBuy = document.getElementById("btnConfirmBuy");
         const btnConfirmCart = document.getElementById("btnConfirmCart");
+        const promoContainer = document.getElementById("promoContainer");
+        const totalPriceContainer = document.getElementById("totalPriceContainer");
 
         const actionQty = document.getElementById("actionQty");
         const actionPromo = document.getElementById("actionPromo");
@@ -78,72 +85,61 @@
         const unitPriceDisplay = document.getElementById("unitPriceDisplay");
 
         const unitPrice = parseFloat('{{ kit.price }}');
+        
         // Константи для URL-адрес
         const BUY_URL = "{% url 'buy_kit' kit.id %}";
         const CART_URL = "{% url 'add_kit_to_cart' kit.id %}";
-        const PROMO_VALIDATE_URL = "{% url 'validate_promo' %}";
+
+
+        function updateHiddenFields() {
+            // Оновлюємо приховані поля для відправки на бекенд
+            let quantity = Math.max(parseInt(actionQty.value) || 1, 1);
+            actionQty.value = quantity; // Відображаємо коректне значення
+            actionQtyHidden.value = quantity;
+            actionPromoHidden.value = actionPromo.value.trim();
+        }
+
+        function updateApproximateTotal() {
+            // Оновлюємо лише орієнтовну суму (без знижки)
+            let quantity = Math.max(parseInt(actionQty.value) || 1, 1);
+            actionTotal.innerText = (unitPrice * quantity).toFixed(2);
+        }
 
         function openPurchaseModal(actionType) {
-            // Налаштування форми залежно від дії
+            updateApproximateTotal(); // Початковий розрахунок без знижки
+
             if (actionType === 'buy') {
                 modalTitle.innerText = "Підтвердження покупки";
                 purchaseForm.action = BUY_URL;
                 btnConfirmBuy.style.display = 'block';
                 btnConfirmCart.style.display = 'none';
-                unitPriceDisplay.parentElement.style.display = 'block'; // Показати ціну для покупки
-                actionTotal.parentElement.style.display = 'block'; // Показати загальну суму
+                promoContainer.style.display = 'block'; // Показати промокод
+                totalPriceContainer.style.display = 'block'; // Показати загальну суму
             } else if (actionType === 'cart') {
                 modalTitle.innerText = "Додати набір до кошика";
                 purchaseForm.action = CART_URL;
                 btnConfirmBuy.style.display = 'none';
                 btnConfirmCart.style.display = 'block';
-                // В кошику промокод часто не враховується, але для консистентності залишимо поля
-                unitPriceDisplay.parentElement.style.display = 'block';
-                actionTotal.parentElement.style.display = 'block';
+                promoContainer.style.display = 'none'; // Сховати промокод для кошика
+                // При додаванні в кошик промокод не потрібен, але покажемо орієнтовну суму для інформації
+                totalPriceContainer.style.display = 'block'; 
             }
 
             purchaseModal.style.display = 'flex';
-            calculateTotal();
         }
         
         function closePurchaseModal() { purchaseModal.style.display = 'none'; }
 
-        function calculateTotal() {
-            let quantity = Math.max(parseInt(actionQty.value) || 1, 1);
-            actionQty.value = quantity;
-            actionQtyHidden.value = quantity;
-
-            const code = actionPromo.value.trim();
-            actionPromoHidden.value = code;
-
-            // Якщо промокод відсутній
-            if (code === "") {
-                actionTotal.innerText = (unitPrice * quantity).toFixed(2);
-                return;
-            }
-
-            // AJAX-запит для валідації промокоду
-            fetch(`${PROMO_VALIDATE_URL}?code=${code}`)
-                .then(res => res.json())
-                .then(data => {
-                    let discount = 0;
-                    if (data.valid) {
-                        discount = data.discount / 100;
-                        // TODO: Додати візуальний зворотний зв'язок про успіх (напр., зелений текст)
-                    } else {
-                        // TODO: Додати візуальний зворотний зв'язок про помилку (напр., червоний текст)
-                    }
-                    const total = unitPrice * quantity * (1 - discount);
-                    actionTotal.innerText = total.toFixed(2);
-                })
-                .catch(() => {
-                    // У разі помилки зв'язку
-                    actionTotal.innerText = (unitPrice * quantity).toFixed(2);
-                });
-        }
-
-        actionQty.addEventListener("input", calculateTotal);
-        actionPromo.addEventListener("input", calculateTotal);
+        // Події: оновлюють приховані поля та орієнтовну суму
+        actionQty.addEventListener("input", () => {
+            updateHiddenFields();
+            updateApproximateTotal();
+        });
+        actionPromo.addEventListener("input", updateHiddenFields); // Промокод оновлює лише приховане поле
+        
+        // Оновлюємо приховані поля безпосередньо перед відправкою форми, щоб захопити останні зміни
+        purchaseForm.addEventListener('submit', updateHiddenFields);
+        
     </script>
 </body>
 </html>

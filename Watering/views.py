@@ -206,7 +206,7 @@ def item_detail(request, item_id):
 
 def kit_detail(request, kit_id):
     kit = get_object_or_404(Kit, id=kit_id)
-    kit_items = kit.items.all()
+    kit_items = KitItem.objects.filter(kit=kit).select_related('item')
 
     return render(request, 'Watering/kit_detail.html', {
         'kit': kit,
@@ -273,29 +273,39 @@ def buy_kit(request, kit_id):
     messages.success(request, f"Ви успішно придбали {quantity} шт. набору {kit.name}")
     return redirect('catalog')
 
+@login_required
 def add_kit_to_cart(request, kit_id):
     if request.method != "POST":
         return redirect('kit_detail', kit_id=kit_id)
     
     kit = get_object_or_404(Kit, id=kit_id)
+    
     try:
         kit_quantity = int(request.POST.get('quantity', '1'))
         if kit_quantity <= 0:
-             raise ValueError("Quantity must be positive.")
+            raise ValueError("Кількість має бути більше нуля.")
     except ValueError:
         messages.error(request, "Некоректна кількість.")
         return redirect('kit_detail', kit_id=kit_id)
+    
+    kit_items_data = KitItem.objects.filter(kit=kit).select_related('item')
 
-    # Отримуємо або створюємо кошик
     cart, created = Cart.objects.get_or_create(user=request.user)
+    
+    # Тепер ітеруємо по об'єктах KitItem
+    for kit_item_obj in kit_items_data:
+        
+        # kit_item_obj.item: об'єкт Item
+        # kit_item_obj.quantity: кількість цього Item в ОДНОМУ наборі
+        
+        item_qty_in_kit = kit_item_obj.quantity # Кількість одиниць в одному наборі (з KitItem)
+        item_qty_to_add = item_qty_in_kit * kit_quantity # Загальна кількість до додавання
+        item_obj = kit_item_obj.item # Сам товар Item
 
-    for item in kit.items.all():
-        item_qty_to_add = item.quantity * kit_quantity 
-
-        # Отримуємо або створюємо елемент кошика для цього товару
+        # Отримуємо або створюємо елемент кошика для цього конкретного товару
         cart_item, created = CartItem.objects.get_or_create(
             cart=cart, 
-            item=item
+            item=item_obj
         )
         
         # Оновлюємо кількість
@@ -303,16 +313,11 @@ def add_kit_to_cart(request, kit_id):
             cart_item.quantity += item_qty_to_add
         else:
             cart_item.quantity = item_qty_to_add
-        
-        # Додайте перевірку наявності на складі, якщо потрібно
-        # if item.stock_quantity < cart_item.quantity:
-        #    raise Exception(f"Занадто велика кількість товару {item.name}!")
             
         cart_item.save()
 
     messages.success(request, f"Набір '{kit.name}' ({kit_quantity} шт.) додано до кошика.")
     return redirect('cart')
-
 
 # Покупка окремого товару
 @login_required
